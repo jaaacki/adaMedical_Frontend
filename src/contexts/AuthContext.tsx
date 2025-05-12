@@ -16,6 +16,7 @@ interface User {
     id: number;
     name: string;
   };
+  is_active?: boolean;
 }
 
 // Minimal context type
@@ -46,6 +47,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
 
+  // Debug the user state whenever it changes
+  useEffect(() => {
+    console.log("Current user state:", user);
+  }, [user]);
+  
   // Check authentication on load
   useEffect(() => {
     async function checkAuth() {
@@ -57,13 +63,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           return;
         }
         
+        console.log("Found token, getting user data...");
         const { data } = await axios.get(`${API_URL}/users/me`, {
           headers: { Authorization: `Bearer ${token}` }
         });
         
+        console.log("User data from API:", data);
         setUser(data);
         setIsAuthenticated(true);
       } catch (err) {
+        console.error("Auth check error:", err);
         localStorage.removeItem('token');
       } finally {
         setIsLoading(false);
@@ -79,32 +88,35 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setError(null);
     
     try {
-      console.log('Attempting login with:', email);
+      console.log("Attempting login for:", email);
       const { data } = await axios.post(`${API_URL}/users/login`, { email, password });
-      console.log('Login response:', data);
+      console.log("Login response:", data);
       
-      // Handle different response formats
+      let token = null;
+      
+      // Check different response formats
       if (data.access_token) {
-        localStorage.setItem('token', data.access_token);
+        token = data.access_token;
       } else if (data.status === 'success' && data.access_token) {
-        localStorage.setItem('token', data.access_token);
+        token = data.access_token;
       } else {
-        console.error('Invalid response format:', data);
-        throw new Error('Invalid response format - missing access token');
+        console.error("Invalid response format:", data);
+        throw new Error("Invalid response format");
       }
       
-      // Fetch user data with the new token
-      const token = localStorage.getItem('token');
-      console.log('Fetching user data with token');
+      localStorage.setItem('token', token);
+      
+      // Fetch user data with the token
+      console.log("Getting user profile with token...");
       const userResponse = await axios.get(`${API_URL}/users/me`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       
-      console.log('User data response:', userResponse.data);
+      console.log("User profile response:", userResponse.data);
       setUser(userResponse.data);
       setIsAuthenticated(true);
       
-      console.log('Redirecting to dashboard...');
+      // Navigate to dashboard
       router.push('/dashboard');
     } catch (err: any) {
       console.error('Login error:', err);
