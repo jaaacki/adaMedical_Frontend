@@ -15,7 +15,8 @@ const nextConfig = {
     return [
       {
         source: '/api/:path*',
-        destination: `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5555/api/v1'}/:path*`,
+        // Use port 5000 instead of 5555, which is the Flask app's default port in docker-compose
+        destination: `http://localhost:5000/api/v1/:path*`,
       },
     ];
   },

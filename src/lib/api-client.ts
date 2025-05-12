@@ -1,12 +1,50 @@
 import axios from 'axios';
 
-// Create an Axios instance with default config
-const apiClient = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5555/api/v1',
+// Create an Axios instance with direct backend config for debugging
+const debugApiClient = axios.create({
+  // Try connecting directly to the backend to diagnose the issue
+  baseURL: 'http://localhost:5000/api/v1',
   headers: {
     'Content-Type': 'application/json',
   },
-  // Increase timeout to handle potentially slow responses
+  timeout: 10000,
+});
+
+// Add a request interceptor to log requests
+debugApiClient.interceptors.request.use(
+  (config) => {
+    console.log('Debug API request:', config.method, config.url);
+    return config;
+  },
+  (error) => {
+    console.error('Debug API request error:', error);
+    return Promise.reject(error);
+  }
+);
+
+// Add a response interceptor to log responses
+debugApiClient.interceptors.response.use(
+  (response) => {
+    console.log('Debug API response:', response.status, response.data);
+    return response;
+  },
+  (error) => {
+    console.error('Debug API error:', error.message);
+    if (error.response) {
+      console.error('Response status:', error.response.status);
+      console.error('Response data:', error.response.data);
+    }
+    return Promise.reject(error);
+  }
+);
+
+// Create an Axios instance with relative URLs for standard app use
+const apiClient = axios.create({
+  // Use relative URLs that will be proxied by Next.js rewrites
+  baseURL: '/api',
+  headers: {
+    'Content-Type': 'application/json',
+  },
   timeout: 10000,
 });
 
@@ -35,10 +73,6 @@ apiClient.interceptors.request.use(
 // Add a response interceptor for global error handling
 apiClient.interceptors.response.use(
   (response) => {
-    // Log successful responses in development
-    if (process.env.NODE_ENV === 'development') {
-      console.log(`API Response [${response.config.url}]:`, response.status);
-    }
     return response;
   },
   async (error) => {
@@ -100,4 +134,19 @@ apiClient.interceptors.response.use(
   }
 );
 
+// Utility function to debug backend connectivity
+export const debugBackendConnection = async () => {
+  try {
+    console.log('Testing direct connection to backend...');
+    const response = await debugApiClient.get('/health');
+    console.log('Backend is reachable!', response.data);
+    return true;
+  } catch (error) {
+    console.error('Backend connection failed:', error.message);
+    return false;
+  }
+};
+
+// Export both clients for different use cases
+export { debugApiClient };
 export default apiClient;
