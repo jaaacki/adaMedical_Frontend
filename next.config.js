@@ -6,8 +6,7 @@ const nextConfig = {
   experimental: {
     // For better CSS optimization
     optimizeCss: true,
-    // For improved server-side rendering
-    serverActions: true,
+    // Removed serverActions as it's now available by default
   },
   // API configuration - adjust to your backend URL
   async rewrites() {
