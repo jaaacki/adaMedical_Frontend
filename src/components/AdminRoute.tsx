@@ -7,7 +7,11 @@ import { useRouter } from 'next/navigation';
 export default function AdminRoute({ children }: { children: React.ReactNode }) {
   const { user, isLoading } = useAuth();
   const router = useRouter();
-  const isAdmin = user?.role?.name === 'Admin';
+  
+  // Fix: Account for the typo in the role name "Admininstrator" (with an extra "i")
+  const isAdmin = user?.role?.name === 'Admin' || 
+                 user?.role?.name === 'Administrator' || 
+                 user?.role?.name === 'Admininstrator';
   
   // If still loading, show a spinner
   if (isLoading) {

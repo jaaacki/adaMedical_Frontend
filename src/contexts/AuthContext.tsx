@@ -3,6 +3,7 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import axios from 'axios';
+import apiClient from '@/lib/api-client';
 
 // API URL
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5555/api/v1';
@@ -25,6 +26,7 @@ interface AuthContextType {
   isAuthenticated: boolean;
   isLoading: boolean;
   login: (email: string, password: string) => Promise<void>;
+  loginWithGoogle: () => void;
   logout: () => void;
   error: string | null;
 }
@@ -35,13 +37,14 @@ const AuthContext = createContext<AuthContextType>({
   isAuthenticated: false,
   isLoading: true,
   login: async () => {},
+  loginWithGoogle: () => {},
   logout: () => {},
   error: null
 });
 
-// Debug function
+// Enhanced debug function
 function debugLog(message: string, data?: any) {
-  if (typeof window !== 'undefined' && process.env.NODE_ENV === 'development') {
+  if (typeof window !== 'undefined') {
     console.log(`[Auth] ${message}`, data || '');
   }
 }
@@ -58,34 +61,50 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     async function checkAuth() {
       try {
-        const token = localStorage.getItem('token');
+        // Check for access token
+        const token = localStorage.getItem('accessToken');
         
         if (!token) {
+          debugLog("No access token found in localStorage");
           setIsLoading(false);
           return;
         }
         
-        debugLog("Checking auth with token");
-        const response = await axios.get(`${API_URL}/users/me`, {
-          headers: { Authorization: `Bearer ${token}` }
-        });
+        debugLog("Access token found, checking authentication");
         
-        const userData = response.data;
-        debugLog("User data from API:", userData);
-        
-        // Ensure user data has correct structure
-        setUser(userData);
-        setIsAuthenticated(true);
-        
-        // Debug user role
-        if (userData?.role?.name) {
-          debugLog(`User role: ${userData.role.name}`);
-        } else {
-          debugLog("User has no role");
+        try {
+          // Fetch current user data
+          const response = await apiClient.get('/users/me');
+          
+          const userData = response.data;
+          debugLog("User data fetched from API:", userData);
+          
+          // Debug role information specifically
+          if (userData?.role) {
+            debugLog("Role from API:", userData.role);
+            debugLog("Role ID:", userData.role.id);
+            debugLog("Role Name:", userData.role.name);
+          } else {
+            debugLog("No role information in user data");
+          }
+          
+          // Store the user data
+          setUser(userData);
+          setIsAuthenticated(true);
+          
+        } catch (apiError: any) {
+          debugLog("API error during auth check:", apiError.message);
+          debugLog("API error status:", apiError.response?.status);
+          debugLog("API error data:", apiError.response?.data);
+          
+          // Clear invalid tokens
+          if (apiError.response?.status === 401) {
+            localStorage.removeItem('accessToken');
+            localStorage.removeItem('refreshToken');
+          }
         }
       } catch (err) {
-        debugLog("Auth check error:", err);
-        localStorage.removeItem('token');
+        debugLog("General error during auth check:", err);
       } finally {
         setIsLoading(false);
       }
@@ -100,50 +119,89 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setError(null);
     
     try {
-      debugLog(`Logging in: ${email}`);
-      const response = await axios.post(`${API_URL}/users/login`, { email, password });
+      debugLog(`Attempting login for email: ${email}`);
       
-      let token = null;
+      // Make login request
+      const response = await axios.post(`${API_URL}/users/login`, { email, password });
+      debugLog("Login API response:", response.data);
+      
+      // Extract tokens
+      let accessToken = null;
+      let refreshToken = null;
+      
       if (response.data.access_token) {
-        token = response.data.access_token;
+        accessToken = response.data.access_token;
+        refreshToken = response.data.refresh_token;
+        debugLog("Tokens extracted from response");
       } else if (response.data.token) {
-        token = response.data.token;
+        accessToken = response.data.token;
+        debugLog("Legacy token format detected");
       } else {
-        throw new Error("Invalid response format");
+        throw new Error("Invalid response format - no token found");
       }
       
-      localStorage.setItem('token', token);
+      // Store tokens in localStorage
+      localStorage.setItem('accessToken', accessToken);
+      if (refreshToken) {
+        localStorage.setItem('refreshToken', refreshToken);
+      }
+      debugLog("Tokens stored in localStorage");
       
       // Fetch user data
-      const userResponse = await axios.get(`${API_URL}/users/me`, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
-      
+      const userResponse = await apiClient.get('/users/me');
       const userData = userResponse.data;
       debugLog("User data after login:", userData);
       
+      // Debug role information
+      if (userData?.role) {
+        debugLog("Role info:", userData.role);
+        debugLog("Role name:", userData.role.name);
+        debugLog("Is admin check:", userData.role.name === 'Admin' || userData.role.name === 'Administrator');
+      } else {
+        debugLog("No role information in user data");
+      }
+      
+      // Update state
       setUser(userData);
       setIsAuthenticated(true);
       
+      // Navigate to dashboard
       router.push('/dashboard');
+      
     } catch (err: any) {
       debugLog("Login error:", err);
+      debugLog("Error response:", err.response?.data);
       setError('Login failed. Please check your credentials.');
     } finally {
       setIsLoading(false);
     }
   };
 
+  // Google login function
+  const loginWithGoogle = () => {
+    debugLog("Initiating Google login");
+    // Store current path for redirect after login
+    const currentPath = window.location.pathname;
+    if (currentPath !== '/auth/login') {
+      localStorage.setItem('redirect_after_login', currentPath);
+    }
+    
+    // Redirect to Google auth endpoint
+    window.location.href = `${API_URL}/auth/google/login`;
+  };
+
   // Logout function
   const logout = () => {
-    localStorage.removeItem('token');
+    debugLog("Logging out user");
+    localStorage.removeItem('accessToken');
+    localStorage.removeItem('refreshToken');
     setUser(null);
     setIsAuthenticated(false);
     router.push('/auth/login');
   };
 
   return (
-    <AuthContext.Provider value={{ user, isAuthenticated, isLoading, login, logout, error }}>
+    <AuthContext.Provider value={{ user, isAuthenticated, isLoading, login, loginWithGoogle, logout, error }}>
       {children}
     </AuthContext.Provider>
   );

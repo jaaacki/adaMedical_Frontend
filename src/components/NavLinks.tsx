@@ -15,9 +15,13 @@ export default function NavLink({ href, children, exact = false }: NavLinkProps)
   const pathname = usePathname();
   const { user } = useAuth();
   
-  // FIX: Check for both 'Admin' and 'Administrator' role names
+  // Get role name with fallback to empty string
   const roleForNavigation = user?.role?.name || '';
-  const isAdmin = roleForNavigation === 'Admin' || roleForNavigation === 'Administrator';
+  
+  // Fix: Account for the typo in the role name "Admininstrator" (with an extra "i")
+  const isAdmin = roleForNavigation === 'Admin' || 
+                 roleForNavigation === 'Administrator' || 
+                 roleForNavigation === 'Admininstrator';
   
   // Check if this is an admin-only link
   const isAdminOnly = href.includes('/users') || href.includes('/roles');
