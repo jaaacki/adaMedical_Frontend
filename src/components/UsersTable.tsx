@@ -33,7 +33,7 @@ export default function UsersTable({ users, loading, onDeleteUser }: UsersTableP
   }
 
   const handleEditUser = (userId: number) => {
-    router.push(`/dashboard/users/edit/${userId}`);
+    router.push(`/users/edit/${userId}`);
   };
 
   return (
