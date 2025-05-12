@@ -7,7 +7,7 @@ import axios from 'axios';
 // API URL
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5555/api/v1';
 
-// Simple user type
+// User type
 interface User {
   id: number;
   name: string;
@@ -19,7 +19,7 @@ interface User {
   is_active?: boolean;
 }
 
-// Minimal context type
+// Auth context type
 interface AuthContextType {
   user: User | null;
   isAuthenticated: boolean;
@@ -29,7 +29,7 @@ interface AuthContextType {
   error: string | null;
 }
 
-// Create context with default values
+// Create context
 const AuthContext = createContext<AuthContextType>({
   user: null,
   isAuthenticated: false,
@@ -39,6 +39,13 @@ const AuthContext = createContext<AuthContextType>({
   error: null
 });
 
+// Debug function
+function debugLog(message: string, data?: any) {
+  if (typeof window !== 'undefined' && process.env.NODE_ENV === 'development') {
+    console.log(`[Auth] ${message}`, data || '');
+  }
+}
+
 // Provider component
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
@@ -47,11 +54,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
 
-  // Debug the user state whenever it changes
-  useEffect(() => {
-    console.log("Current user state:", user);
-  }, [user]);
-  
   // Check authentication on load
   useEffect(() => {
     async function checkAuth() {
@@ -63,16 +65,26 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           return;
         }
         
-        console.log("Found token, getting user data...");
-        const { data } = await axios.get(`${API_URL}/users/me`, {
+        debugLog("Checking auth with token");
+        const response = await axios.get(`${API_URL}/users/me`, {
           headers: { Authorization: `Bearer ${token}` }
         });
         
-        console.log("User data from API:", data);
-        setUser(data);
+        const userData = response.data;
+        debugLog("User data from API:", userData);
+        
+        // Ensure user data has correct structure
+        setUser(userData);
         setIsAuthenticated(true);
+        
+        // Debug user role
+        if (userData?.role?.name) {
+          debugLog(`User role: ${userData.role.name}`);
+        } else {
+          debugLog("User has no role");
+        }
       } catch (err) {
-        console.error("Auth check error:", err);
+        debugLog("Auth check error:", err);
         localStorage.removeItem('token');
       } finally {
         setIsLoading(false);
@@ -88,38 +100,34 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setError(null);
     
     try {
-      console.log("Attempting login for:", email);
-      const { data } = await axios.post(`${API_URL}/users/login`, { email, password });
-      console.log("Login response:", data);
+      debugLog(`Logging in: ${email}`);
+      const response = await axios.post(`${API_URL}/users/login`, { email, password });
       
       let token = null;
-      
-      // Check different response formats
-      if (data.access_token) {
-        token = data.access_token;
-      } else if (data.status === 'success' && data.access_token) {
-        token = data.access_token;
+      if (response.data.access_token) {
+        token = response.data.access_token;
+      } else if (response.data.token) {
+        token = response.data.token;
       } else {
-        console.error("Invalid response format:", data);
         throw new Error("Invalid response format");
       }
       
       localStorage.setItem('token', token);
       
-      // Fetch user data with the token
-      console.log("Getting user profile with token...");
+      // Fetch user data
       const userResponse = await axios.get(`${API_URL}/users/me`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       
-      console.log("User profile response:", userResponse.data);
-      setUser(userResponse.data);
+      const userData = userResponse.data;
+      debugLog("User data after login:", userData);
+      
+      setUser(userData);
       setIsAuthenticated(true);
       
-      // Navigate to dashboard
       router.push('/dashboard');
     } catch (err: any) {
-      console.error('Login error:', err);
+      debugLog("Login error:", err);
       setError('Login failed. Please check your credentials.');
     } finally {
       setIsLoading(false);
