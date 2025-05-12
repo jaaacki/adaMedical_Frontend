@@ -28,12 +28,24 @@ export const useUsers = (): UseUsersReturn => {
     
     try {
       const response: UsersListResponse = await getUsers();
-      setUsers(response.items || []);
+      console.log('Response in hook:', response);
+      
+      // Ensure we have users data
+      if (response.items) {
+        setUsers(response.items);
+      } else if (Array.isArray(response)) {
+        // If the API returned an array directly
+        setUsers(response);
+      } else {
+        console.error('Unexpected response format:', response);
+        setUsers([]);
+      }
       
       if (response.pagination) {
         setPagination(response.pagination);
       }
     } catch (err) {
+      console.error('Error in useUsers hook:', err);
       setError(err as Error);
     } finally {
       setLoading(false);

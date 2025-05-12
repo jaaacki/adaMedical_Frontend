@@ -18,8 +18,22 @@ export interface UsersListResponse {
  */
 export const getUsers = async (): Promise<UsersListResponse> => {
   try {
+    console.log('Fetching users from:', `${apiClient.defaults.baseURL}/users/`);
     const response = await apiClient.get('/users/');
-    return response.data;
+    console.log('Users response:', response.data);
+    
+    // If the API returns an array directly
+    if (Array.isArray(response.data)) {
+      return { items: response.data };
+    }
+    
+    // If the API returns an object with items property
+    if (response.data.items) {
+      return response.data;
+    }
+    
+    // If the API returns the users directly in the data property
+    return { items: response.data };
   } catch (error) {
     console.error('Error fetching users:', error);
     throw error;
