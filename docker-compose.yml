@@ -1,0 +1,17 @@
+services:
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: business-ops-frontend
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./src:/app/src
+    environment:
+      - NODE_ENV=development
+      - NEXT_PUBLIC_API_URL=http://localhost:5555/api/v1
+    # For hot reloading during development, use this instead of the production build
+    command: npm run dev
+    # To use production build, comment above and uncomment below
+    # command: npm run start
