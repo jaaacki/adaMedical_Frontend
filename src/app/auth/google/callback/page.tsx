@@ -12,10 +12,7 @@ export default function GoogleCallback() {
   useEffect(() => {
     const processGoogleCallback = async () => {
       try {
-        // In a real implementation, we'd handle the token exchange here
-        // But for simplicity, we'll assume the backend handles this and returns tokens directly
-        
-        // Extract tokens from the URL if your backend redirects with tokens in URL params
+        // Check if tokens are in URL params (unlikely but possible depending on implementation)
         const accessToken = searchParams.get('access_token');
         const refreshToken = searchParams.get('refresh_token');
         
@@ -25,17 +22,39 @@ export default function GoogleCallback() {
             localStorage.setItem('refreshToken', refreshToken);
           }
           
-          // Redirect to dashboard
-          router.push('/dashboard');
+          // Get redirect path from localStorage or default to dashboard
+          const redirectPath = localStorage.getItem('redirect_after_login') || '/dashboard';
+          localStorage.removeItem('redirect_after_login'); // Clean up
+          router.push(redirectPath);
         } else {
-          // If tokens are not in URL, assume the backend handled the OAuth flow and returned tokens in the response
+          // Handle OAuth flow with code/state
           const code = searchParams.get('code');
           const state = searchParams.get('state');
           
           if (code && state) {
-            // Backend directly provides tokens in the response
-            // Redirect to the callback endpoint on our backend
-            window.location.href = `${process.env.NEXT_PUBLIC_API_URL}/auth/google/callback?code=${code}&state=${state}`;
+            try {
+              // Exchange the code for tokens
+              const response = await apiClient.get(`/auth/google/callback?code=${code}&state=${state}`);
+              
+              // Extract tokens from response
+              const { access_token, refresh_token } = response.data;
+              
+              if (access_token) {
+                localStorage.setItem('accessToken', access_token);
+                if (refresh_token) {
+                  localStorage.setItem('refreshToken', refresh_token);
+                }
+                
+                // Get redirect path from localStorage or default to dashboard
+                const redirectPath = localStorage.getItem('redirect_after_login') || '/dashboard';
+                localStorage.removeItem('redirect_after_login'); // Clean up
+                router.push(redirectPath);
+              } else {
+                setError('Authentication failed: No token received');
+              }
+            } catch (err: any) {
+              setError(err.response?.data?.message || 'Failed to authenticate with Google');
+            }
           } else {
             setError('Authentication failed: Missing parameters');
           }

@@ -4,21 +4,29 @@ import React, { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
 
-export default function AdminRoute({ children }: { children: React.ReactNode }) {
+interface AdminRouteProps {
+  children: React.ReactNode;
+}
+
+export default function AdminRoute({ children }: AdminRouteProps) {
   const { user, isAuthenticated, isLoading } = useAuth();
   const router = useRouter();
 
   useEffect(() => {
     if (!isLoading) {
+      // If not authenticated, redirect to login
       if (!isAuthenticated) {
-        router.push('/auth/login');
-      } else if (user?.role?.name !== 'Admin') {
-        // If authenticated but not an admin
+        const currentPath = window.location.pathname;
+        router.push(`/auth/login?redirect=${encodeURIComponent(currentPath)}`);
+      } 
+      // If authenticated but not an admin, redirect to dashboard
+      else if (user?.role?.name !== 'Admin') {
         router.push('/dashboard');
       }
     }
   }, [isAuthenticated, isLoading, router, user]);
 
+  // Show loading indicator while checking authentication
   if (isLoading) {
     return (
       <div className="flex items-center justify-center min-h-screen">

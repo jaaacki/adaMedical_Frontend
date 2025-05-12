@@ -1,9 +1,7 @@
-// src/app/layout.tsx
 import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
 import './globals.css';
 import AuthProviderWrapper from '@/components/AuthProviderWrapper';
-import RootAppWrapper from '@/components/RootAppWrapper'
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -21,9 +19,7 @@ export default function RootLayout({
         <html lang="en">
             <body className={inter.className}>
                 <AuthProviderWrapper>
-                    <RootAppWrapper>
-                        {children}
-                    </RootAppWrapper>
+                    {children}
                 </AuthProviderWrapper>
             </body>
         </html>

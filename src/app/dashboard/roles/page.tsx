@@ -1,4 +1,3 @@
-// src/app/roles/page.tsx
 'use client';
 
 import React, { useState } from 'react';
@@ -14,11 +13,6 @@ enum FormMode {
   EDIT
 }
 
-/**
- * Roles management page
- * Note: The AdminRoute protection is now handled by the layout.tsx file
- * And DashboardLayout is handled by the parent dashboard/layout.tsx
- */
 export default function RolesPage() {
   const { roles, loading, error, refetch } = useRoles();
   const [formMode, setFormMode] = useState<FormMode>(FormMode.NONE);

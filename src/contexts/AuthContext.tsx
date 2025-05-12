@@ -1,7 +1,7 @@
 'use client';
 
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import axios from 'axios';
 
 // API URL
@@ -71,6 +71,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
+  const searchParams = useSearchParams();
 
   // Check if user is already authenticated
   useEffect(() => {
@@ -116,8 +117,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       setUser(userResponse.data);
       setIsAuthenticated(true);
       
-      // Redirect to dashboard
-      router.push('/dashboard');
+      // Redirect to dashboard or the specified redirect path
+      const redirectTo = searchParams?.get('redirect') || '/dashboard';
+      router.push(redirectTo);
     } catch (err: any) {
       const errorMessage = err.response?.data?.message || 'Login failed. Please check your credentials.';
       setError(errorMessage);
@@ -129,6 +131,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   // Google login
   const loginWithGoogle = () => {
+    // Store the current path for potential redirect after login
+    const redirectAfterLogin = searchParams?.get('redirect') || '/dashboard';
+    localStorage.setItem('redirect_after_login', redirectAfterLogin);
+    
+    // Navigate to Google login endpoint
     window.location.href = `${API_URL}/auth/google/login`;
   };
 

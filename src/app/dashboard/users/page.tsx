@@ -1,4 +1,3 @@
-// src/app/users/page.tsx
 'use client';
 
 import React, { useState } from 'react';
@@ -7,11 +6,6 @@ import UsersTable from '@/components/UsersTable';
 import { useUsers } from '@/hooks/useUsers';
 import { deleteUser } from '@/services/userService';
 
-/**
- * Users management page
- * Note: The AdminRoute protection is now handled by the layout.tsx file
- * And DashboardLayout is handled by the parent dashboard/layout.tsx
- */
 export default function UsersPage() {
   const { users, loading, error, refetch } = useUsers();
   const [deleteStatus, setDeleteStatus] = useState<{
@@ -55,7 +49,7 @@ export default function UsersPage() {
         <div className="flex justify-between items-center mb-6">
           <h1 className="text-2xl font-semibold text-gray-900">User Management</h1>
           <Link
-            href="/users/new"
+            href="/dashboard/users/new"
             className="px-4 py-2 bg-primary-600 text-white rounded-md hover:bg-primary-700 flex items-center"
           >
             <svg

@@ -1,4 +1,3 @@
-// src/components/DashboardLayout.tsx
 'use client';
 
 import React from 'react';
@@ -37,10 +36,10 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
                   {/* Only show admin links to admins */}
                   {isAdmin && (
                     <>
-                      <NavLink href="/users">
+                      <NavLink href="/dashboard/users">
                         Users
                       </NavLink>
-                      <NavLink href="/roles">
+                      <NavLink href="/dashboard/roles">
                         Roles
                       </NavLink>
                     </>
@@ -80,10 +79,10 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
             
             {isAdmin && (
               <>
-                <Link href="/users" className="text-gray-300 hover:bg-gray-700 hover:text-white block px-3 py-2 rounded-md text-base font-medium">
+                <Link href="/dashboard/users" className="text-gray-300 hover:bg-gray-700 hover:text-white block px-3 py-2 rounded-md text-base font-medium">
                   Users
                 </Link>
-                <Link href="/roles" className="text-gray-300 hover:bg-gray-700 hover:text-white block px-3 py-2 rounded-md text-base font-medium">
+                <Link href="/dashboard/roles" className="text-gray-300 hover:bg-gray-700 hover:text-white block px-3 py-2 rounded-md text-base font-medium">
                   Roles
                 </Link>
               </>
@@ -114,7 +113,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
       </nav>
 
       {/* Main content */}
-      <main className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
+      <main className="max-w-7xl mx-auto px-4 py-6 sm:px-6 lg:px-8">
         {children}
       </main>
     </div>

@@ -1,4 +1,3 @@
-// src/app/dashboard/page.tsx
 'use client';
 
 import React from 'react';
@@ -11,7 +10,7 @@ export default function Dashboard() {
   const isAdmin = user?.role?.name === 'Admin';
 
   return (
-    <div>
+    <div className="space-y-6">
       <h1 className="text-2xl font-semibold text-gray-900 mb-6">Dashboard Overview</h1>
 
       {/* Dashboard Overview */}
@@ -168,7 +167,7 @@ export default function Dashboard() {
           <div className="border-t border-gray-200 px-4 py-5 sm:p-6">
             <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
               <Link
-                href="/users"
+                href="/dashboard/users"
                 className="block p-6 border border-gray-200 rounded-lg hover:bg-gray-50"
               >
                 <h3 className="text-lg font-medium text-gray-900">User Management</h3>
@@ -178,7 +177,7 @@ export default function Dashboard() {
               </Link>
               
               <Link
-                href="/roles"
+                href="/dashboard/roles"
                 className="block p-6 border border-gray-200 rounded-lg hover:bg-gray-50"
               >
                 <h3 className="text-lg font-medium text-gray-900">Role Management</h3>
