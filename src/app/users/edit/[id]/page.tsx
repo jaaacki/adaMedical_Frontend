@@ -244,3 +244,4 @@ export default function EditUserPage({ params }: EditUserPageProps) {
       </DashboardLayout>
     </AdminRoute>
   );
+}
