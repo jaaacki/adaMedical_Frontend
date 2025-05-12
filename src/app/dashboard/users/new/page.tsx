@@ -3,7 +3,8 @@
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import RoleDropdown from '@/components/RoleDropdown';
-import { createUser } from '@/services/userService';
+import CurrencySelector from '@/components/CurrencySelector';
+import { createUser, updateUserCurrencies } from '@/services/userService';
 
 export default function NewUserPage() {
   const router = useRouter();
@@ -15,6 +16,8 @@ export default function NewUserPage() {
     is_active: true,
     currency_context: 'SGD'
   });
+  const [selectedCurrencies, setSelectedCurrencies] = useState<string[]>(['SGD']);
+  const [defaultCurrency, setDefaultCurrency] = useState<string>('SGD');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -28,6 +31,27 @@ export default function NewUserPage() {
     });
   };
 
+  const handleCurrenciesChange = (currencies: string[]) => {
+    setSelectedCurrencies(currencies);
+    
+    // If no default currency is set or the default is not in the selection anymore
+    if (currencies.length > 0 && (!defaultCurrency || !currencies.includes(defaultCurrency))) {
+      setDefaultCurrency(currencies[0]);
+      setFormData({
+        ...formData,
+        currency_context: currencies[0]
+      });
+    }
+  };
+
+  const handleDefaultCurrencyChange = (currency: string) => {
+    setDefaultCurrency(currency);
+    setFormData({
+      ...formData,
+      currency_context: currency
+    });
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
@@ -37,10 +61,21 @@ export default function NewUserPage() {
       // Parse role_id as number if it's not empty
       const userData = {
         ...formData,
-        role_id: formData.role_id ? parseInt(formData.role_id) : null
+        role_id: formData.role_id ? parseInt(formData.role_id) : null,
+        // Set the default currency as the currency_context
+        currency_context: defaultCurrency
       };
 
-      await createUser(userData);
+      // Create the user
+      const createdUser = await createUser(userData);
+      
+      // If we have multiple currencies selected, update the user's currencies
+      if (selectedCurrencies.length > 1 || 
+          (selectedCurrencies.length === 1 && selectedCurrencies[0] !== defaultCurrency)) {
+        await updateUserCurrencies(createdUser.id, selectedCurrencies, defaultCurrency);
+      }
+      
+      // Success! Redirect to users list
       router.push('/dashboard/users');
     } catch (err: any) {
       setError(err.response?.data?.message || 'Failed to create user');
@@ -122,19 +157,21 @@ export default function NewUserPage() {
             </div>
             
             <div>
-              <label htmlFor="currency_context" className="block text-sm font-medium text-gray-700">
-                Currency Preference
+              <label htmlFor="currencies" className="block text-sm font-medium text-gray-700">
+                Currency Access
               </label>
-              <select
-                id="currency_context"
-                name="currency_context"
-                value={formData.currency_context}
-                onChange={handleChange}
-                className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-primary-500 focus:border-primary-500"
-              >
-                <option value="SGD">SGD</option>
-                <option value="IDR">IDR</option>
-              </select>
+              <div className="mt-1">
+                <CurrencySelector
+                  isEditing={true}
+                  selectedCurrencies={selectedCurrencies}
+                  onChange={handleCurrenciesChange}
+                  defaultCurrency={defaultCurrency}
+                  onDefaultChange={handleDefaultCurrencyChange}
+                />
+              </div>
+              <p className="mt-1 text-sm text-gray-500">
+                Select currencies this user can access. The default currency will be used for new records.
+              </p>
             </div>
             
             <div className="flex items-center">

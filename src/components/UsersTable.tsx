@@ -33,6 +33,10 @@ export default function UsersTable({ users, loading, onDeleteUser }: UsersTableP
     );
   }
 
+  const handleViewUser = (userId: number) => {
+    router.push(`/dashboard/users/${userId}`);
+  };
+
   const handleEditUser = (userId: number) => {
     router.push(`/dashboard/users/edit/${userId}`);
   };
@@ -119,6 +123,12 @@ export default function UsersTable({ users, loading, onDeleteUser }: UsersTableP
                 )}
               </td>
               <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                <button
+                  onClick={() => handleViewUser(user.id)}
+                  className="text-primary-600 hover:text-primary-900 mr-3"
+                >
+                  View
+                </button>
                 <button
                   onClick={() => handleEditUser(user.id)}
                   className="text-primary-600 hover:text-primary-900 mr-3"

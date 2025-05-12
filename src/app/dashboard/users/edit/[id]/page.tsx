@@ -3,7 +3,9 @@
 import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import RoleDropdown from '@/components/RoleDropdown';
-import { getUserById, updateUser } from '@/services/userService';
+import CurrencySelector from '@/components/CurrencySelector';
+import { getUserById, updateUser, updateUserCurrencies } from '@/services/userService';
+import { getUserCurrenciesForAdmin } from '@/services/currencyService';
 import { User } from '@/lib';
 
 interface EditUserPageProps {
@@ -23,17 +25,23 @@ export default function EditUserPage({ params }: EditUserPageProps) {
     is_active: true,
     currency_context: 'SGD'
   });
+  const [selectedCurrencies, setSelectedCurrencies] = useState<string[]>([]);
+  const [initialCurrencies, setInitialCurrencies] = useState<string[]>([]);
+  const [defaultCurrency, setDefaultCurrency] = useState<string>('');
   const [loading, setLoading] = useState(false);
   const [fetchLoading, setFetchLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [user, setUser] = useState<User | null>(null);
 
-  // Fetch user data
+  // Fetch user data and currencies
   useEffect(() => {
-    const fetchUser = async () => {
+    const fetchUserData = async () => {
       try {
+        // First fetch the user data
         const userData = await getUserById(userId);
         setUser(userData);
+        
+        // Set form data from user data
         setFormData({
           name: userData.name,
           email: userData.email,
@@ -42,6 +50,30 @@ export default function EditUserPage({ params }: EditUserPageProps) {
           is_active: userData.is_active,
           currency_context: userData.currency_context || 'SGD'
         });
+        
+        // Set default currency
+        setDefaultCurrency(userData.currency_context || 'SGD');
+        
+        try {
+          // Fetch user currencies
+          const currencies = await getUserCurrenciesForAdmin(userId);
+          const currencyCodes = currencies.map(uc => uc.currency_code);
+          
+          setSelectedCurrencies(currencyCodes);
+          setInitialCurrencies(currencyCodes);
+          
+          // Find default currency from currencies
+          const defaultCurrencyObj = currencies.find(uc => uc.is_default);
+          if (defaultCurrencyObj) {
+            setDefaultCurrency(defaultCurrencyObj.currency_code);
+          }
+        } catch (currencyError) {
+          console.warn('Could not fetch currency data, using default currency only:', currencyError);
+          // Just use the default currency from user object
+          const defaultCurrency = userData.currency_context || 'SGD';
+          setSelectedCurrencies([defaultCurrency]);
+          setInitialCurrencies([defaultCurrency]);
+        }
       } catch (err: any) {
         setError(err.message || 'Failed to fetch user data');
       } finally {
@@ -49,7 +81,7 @@ export default function EditUserPage({ params }: EditUserPageProps) {
       }
     };
 
-    fetchUser();
+    fetchUserData();
   }, [userId]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
@@ -62,29 +94,54 @@ export default function EditUserPage({ params }: EditUserPageProps) {
     });
   };
 
+  const handleCurrenciesChange = (currencies: string[]) => {
+    setSelectedCurrencies(currencies);
+    
+    // If default currency is removed, set a new default
+    if (currencies.length > 0 && !currencies.includes(defaultCurrency)) {
+      handleDefaultCurrencyChange(currencies[0]);
+    }
+  };
+
+  const handleDefaultCurrencyChange = (currency: string) => {
+    setDefaultCurrency(currency);
+    setFormData({
+      ...formData,
+      currency_context: currency
+    });
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     setError(null);
 
-    // Only include non-empty fields
-    const updateData: any = {};
-    Object.entries(formData).forEach(([key, value]) => {
-      if (key === 'password' && !value) {
-        // Skip empty password
-        return;
-      }
-      if (key === 'role_id' && value) {
-        updateData[key] = parseInt(value);
-      } else if (key === 'role_id' && !value) {
-        updateData[key] = null; // Explicitly set role_id to null when empty
-      } else {
-        updateData[key] = value;
-      }
-    });
-
     try {
+      // Only include non-empty fields
+      const updateData: any = {};
+      Object.entries(formData).forEach(([key, value]) => {
+        if (key === 'password' && !value) {
+          // Skip empty password
+          return;
+        }
+        if (key === 'role_id' && value) {
+          updateData[key] = parseInt(value);
+        } else if (key === 'role_id' && !value) {
+          updateData[key] = null; // Explicitly set role_id to null when empty
+        } else {
+          updateData[key] = value;
+        }
+      });
+
+      // Update user basic info including currency_context
       await updateUser(userId, updateData);
+      
+      // Update user currencies in a single operation
+      if (selectedCurrencies.length > 0) {
+        await updateUserCurrencies(userId, selectedCurrencies, defaultCurrency);
+      }
+      
+      // Success! Redirect to users list
       router.push('/dashboard/users');
     } catch (err: any) {
       setError(err.response?.data?.message || 'Failed to update user');
@@ -178,19 +235,21 @@ export default function EditUserPage({ params }: EditUserPageProps) {
             </div>
             
             <div>
-              <label htmlFor="currency_context" className="block text-sm font-medium text-gray-700">
-                Currency Preference
+              <label htmlFor="currencies" className="block text-sm font-medium text-gray-700">
+                Currency Access
               </label>
-              <select
-                id="currency_context"
-                name="currency_context"
-                value={formData.currency_context}
-                onChange={handleChange}
-                className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-primary-500 focus:border-primary-500"
-              >
-                <option value="SGD">SGD</option>
-                <option value="IDR">IDR</option>
-              </select>
+              <div className="mt-1">
+                <CurrencySelector
+                  isEditing={true}
+                  selectedCurrencies={selectedCurrencies}
+                  onChange={handleCurrenciesChange}
+                  defaultCurrency={defaultCurrency}
+                  onDefaultChange={handleDefaultCurrencyChange}
+                />
+              </div>
+              <p className="mt-1 text-sm text-gray-500">
+                Select currencies this user can access. The default currency will be used for new records.
+              </p>
             </div>
             
             <div className="flex items-center">
