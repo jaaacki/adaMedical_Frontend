@@ -3,7 +3,6 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-      # Removed the target: deps reference
     container_name: business-ops-frontend
     ports:
       - "3000:3000"
@@ -15,4 +14,4 @@ services:
       - NODE_ENV=development
       - NEXT_PUBLIC_API_URL=http://localhost:5555/api/v1
     working_dir: /app
-    command: sh -c "npm install && npm run build && npm run dev"
+    command: npm run dev

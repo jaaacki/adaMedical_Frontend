@@ -11,8 +11,8 @@ RUN npm install
 # Copy the rest of the application
 COPY . .
 
-# Build the application
-RUN npm run build
+# Make sure the src/app directory exists for Next.js
+RUN mkdir -p src/app
 
 EXPOSE 3000
 

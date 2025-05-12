@@ -2,6 +2,8 @@
 const nextConfig = {
   reactStrictMode: true,
   output: 'standalone',
+  // Source directory configuration
+  distDir: '.next',
   // Configure async loading of scripts
   experimental: {
     // For better CSS optimization
