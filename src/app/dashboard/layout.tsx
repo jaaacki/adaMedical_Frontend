@@ -1,19 +1,22 @@
 'use client';
 
 import React from 'react';
-import AdminRoute from '@/components/AdminRoute';
+import ProtectedRoute from '@/components/ProtectedRoute';
+import Navbar from '@/components/Navbar';
 
-/**
- * This layout ensures that only admin users can access the users management pages
- */
-export default function UsersLayout({
+export default function DashboardLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
   return (
-    <AdminRoute>
-      {children}
-    </AdminRoute>
+    <ProtectedRoute>
+      <div className="min-h-screen bg-gray-100">
+        <Navbar />
+        <main className="py-6">
+          {children}
+        </main>
+      </div>
+    </ProtectedRoute>
   );
 }

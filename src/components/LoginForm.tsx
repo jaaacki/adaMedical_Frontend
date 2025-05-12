@@ -6,37 +6,12 @@ import { useAuth } from '@/contexts/AuthContext';
 export default function LoginForm() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [validationErrors, setValidationErrors] = useState<{
-    email?: string;
-    password?: string;
-  }>({});
-
   const { login, isLoading, error } = useAuth();
-
-  const validate = () => {
-    const errors: { email?: string; password?: string } = {};
-    
-    if (!email) {
-      errors.email = 'Email is required';
-    } else if (!/\S+@\S+\.\S+/.test(email)) {
-      errors.email = 'Email is invalid';
-    }
-    
-    if (!password) {
-      errors.password = 'Password is required';
-    } else if (password.length < 8) {
-      errors.password = 'Password must be at least 8 characters';
-    }
-    
-    setValidationErrors(errors);
-    return Object.keys(errors).length === 0;
-  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
-    if (validate()) {
-      await login({ email, password });
+    if (email && password) {
+      await login(email, password);
     }
   };
 
@@ -63,9 +38,6 @@ export default function LoginForm() {
           className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500 text-gray-900"
           placeholder="you@example.com"
         />
-        {validationErrors.email && (
-          <p className="mt-2 text-sm text-red-600">{validationErrors.email}</p>
-        )}
       </div>
 
       <div>
@@ -82,9 +54,6 @@ export default function LoginForm() {
           onChange={(e) => setPassword(e.target.value)}
           className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500 text-gray-900"
         />
-        {validationErrors.password && (
-          <p className="mt-2 text-sm text-red-600">{validationErrors.password}</p>
-        )}
       </div>
 
       <div>
@@ -95,6 +64,10 @@ export default function LoginForm() {
         >
           {isLoading ? 'Signing in...' : 'Sign In'}
         </button>
+      </div>
+      
+      <div className="text-center text-xs text-gray-500">
+        API URL: {process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5555/api/v1'}
       </div>
     </form>
   );

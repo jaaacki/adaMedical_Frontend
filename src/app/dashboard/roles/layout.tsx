@@ -3,17 +3,8 @@
 import React from 'react';
 import AdminRoute from '@/components/AdminRoute';
 
-/**
- * This layout ensures that only admin users can access the roles management pages
- */
-export default function RolesLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
-  return (
-    <AdminRoute>
-      {children}
-    </AdminRoute>
-  );
+export default function RolesLayout({ children }: { children: React.ReactNode }) {
+  // This layout ensures only admins can access the roles pages
+  // The AdminRoute component handles the access control check
+  return <AdminRoute>{children}</AdminRoute>;
 }

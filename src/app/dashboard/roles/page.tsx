@@ -1,171 +1,43 @@
 'use client';
 
-import React, { useState } from 'react';
-import RolesTable from '@/components/RolesTable';
-import RoleForm from '@/components/RoleForm';
-import { useRoles } from '@/hooks/useRoles';
-import { createRole, updateRole, deleteRole as deleteRoleService } from '@/services/roleService';
-import { Role } from '@/lib';
-
-enum FormMode {
-  NONE,
-  CREATE,
-  EDIT
-}
+import React from 'react';
+import AdminRoute from '@/components/AdminRoute';
+import Link from 'next/link';
 
 export default function RolesPage() {
-  const { roles, loading, error, refetch } = useRoles();
-  const [formMode, setFormMode] = useState<FormMode>(FormMode.NONE);
-  const [currentRole, setCurrentRole] = useState<Role | null>(null);
-  const [formLoading, setFormLoading] = useState(false);
-  const [statusMessage, setStatusMessage] = useState<{
-    type: 'success' | 'error';
-    message: string;
-  } | null>(null);
-
-  const handleCreateRole = async (name: string) => {
-    setFormLoading(true);
-    try {
-      await createRole(name);
-      setFormMode(FormMode.NONE);
-      refetch();
-      setStatusMessage({
-        type: 'success',
-        message: 'Role created successfully'
-      });
-    } catch (err: any) {
-      setStatusMessage({
-        type: 'error',
-        message: err.response?.data?.message || 'Failed to create role'
-      });
-    } finally {
-      setFormLoading(false);
-    }
-  };
-
-  const handleUpdateRole = async (name: string) => {
-    if (!currentRole) return;
-    
-    setFormLoading(true);
-    try {
-      await updateRole(currentRole.id, name);
-      setFormMode(FormMode.NONE);
-      setCurrentRole(null);
-      refetch();
-      setStatusMessage({
-        type: 'success',
-        message: 'Role updated successfully'
-      });
-    } catch (err: any) {
-      setStatusMessage({
-        type: 'error',
-        message: err.response?.data?.message || 'Failed to update role'
-      });
-      // Don't close the form on error so user can try again
-    } finally {
-      setFormLoading(false);
-    }
-  };
-
-  const handleEditRole = (role: Role) => {
-    setCurrentRole(role);
-    setFormMode(FormMode.EDIT);
-  };
-
-  const handleDeleteRole = async (roleId: number) => {
-    try {
-      await deleteRoleService(roleId);
-      refetch();
-      setStatusMessage({
-        type: 'success',
-        message: 'Role deleted successfully'
-      });
-    } catch (err: any) {
-      setStatusMessage({
-        type: 'error',
-        message: err.message || 'Failed to delete role'
-      });
-    }
-  };
-
-  const cancelForm = () => {
-    setFormMode(FormMode.NONE);
-    setCurrentRole(null);
-  };
-
   return (
-    <div className="py-6">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <AdminRoute>
+      <div className="max-w-7xl mx-auto px-4 py-6">
         <div className="flex justify-between items-center mb-6">
-          <h1 className="text-2xl font-semibold text-gray-900">Role Management</h1>
-          {formMode === FormMode.NONE && (
-            <button
-              onClick={() => setFormMode(FormMode.CREATE)}
-              className="px-4 py-2 bg-primary-600 text-white rounded-md hover:bg-primary-700 flex items-center"
-            >
-              <svg
-                className="w-5 h-5 mr-2"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M12 6v6m0 0v6m0-6h6m-6 0H6"
-                />
-              </svg>
-              Add Role
-            </button>
-          )}
-        </div>
-
-        {/* Status Messages */}
-        {error && (
-          <div className="mb-4 p-4 bg-red-100 border border-red-400 text-red-700 rounded">
-            Error loading roles: {error.message}
-          </div>
-        )}
-
-        {statusMessage && (
-          <div
-            className={`mb-4 p-4 ${
-              statusMessage.type === 'success'
-                ? 'bg-green-100 border-green-400 text-green-700'
-                : 'bg-red-100 border-red-400 text-red-700'
-            } rounded border`}
+          <h1 className="text-2xl font-bold">Role Management</h1>
+          <button
+            className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
           >
-            {statusMessage.message}
+            Add Role
+          </button>
+        </div>
+        
+        <div className="bg-white shadow-md rounded-lg p-6">
+          <p className="text-gray-500 text-center py-8">
+            Role management functionality will be implemented here.
+          </p>
+          
+          <div className="bg-yellow-50 border-l-4 border-yellow-400 p-4">
+            <div className="flex">
+              <div className="flex-shrink-0">
+                <svg className="h-5 w-5 text-yellow-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                  <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+                </svg>
+              </div>
+              <div className="ml-3">
+                <p className="text-sm text-yellow-700">
+                  This page manages the roles in the system. We're now using the new app structure with proper nesting.
+                </p>
+              </div>
+            </div>
           </div>
-        )}
-
-        {/* Role Form */}
-        {formMode !== FormMode.NONE && (
-          <div className="bg-white shadow rounded-lg p-6 mb-6">
-            <h2 className="text-lg font-medium text-gray-900 mb-4">
-              {formMode === FormMode.CREATE ? 'Create New Role' : 'Edit Role'}
-            </h2>
-            <RoleForm
-              role={currentRole || undefined}
-              onSubmit={formMode === FormMode.CREATE ? handleCreateRole : handleUpdateRole}
-              onCancel={cancelForm}
-              isLoading={formLoading}
-            />
-          </div>
-        )}
-
-        {/* Roles Table */}
-        <div className="bg-white shadow rounded-lg">
-          <RolesTable
-            roles={roles}
-            loading={loading}
-            onEditRole={handleEditRole}
-            onDeleteRole={handleDeleteRole}
-          />
         </div>
       </div>
-    </div>
+    </AdminRoute>
   );
 }

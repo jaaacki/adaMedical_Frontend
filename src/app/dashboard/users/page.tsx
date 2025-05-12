@@ -1,103 +1,45 @@
 'use client';
 
-import React, { useState } from 'react';
+import React from 'react';
+import AdminRoute from '@/components/AdminRoute';
 import Link from 'next/link';
-import UsersTable from '@/components/UsersTable';
-import { useUsers } from '@/hooks/useUsers';
-import { deleteUser } from '@/services/userService';
 
 export default function UsersPage() {
-  const { users, loading, error, refetch } = useUsers();
-  const [deleteStatus, setDeleteStatus] = useState<{
-    loading: boolean;
-    error: string | null;
-    success: string | null;
-  }>({
-    loading: false,
-    error: null,
-    success: null,
-  });
-
-  const handleDeleteUser = async (userId: number) => {
-    setDeleteStatus({
-      loading: true,
-      error: null,
-      success: null,
-    });
-
-    try {
-      await deleteUser(userId);
-      setDeleteStatus({
-        loading: false,
-        error: null,
-        success: 'User deleted successfully',
-      });
-      // Refetch the users list to update the UI
-      refetch();
-    } catch (err: any) {
-      setDeleteStatus({
-        loading: false,
-        error: err.message || 'Failed to delete user',
-        success: null,
-      });
-    }
-  };
-
+  // For simplicity, we'll show a placeholder for now
   return (
-    <div className="py-6">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <AdminRoute>
+      <div className="max-w-7xl mx-auto px-4 py-6">
         <div className="flex justify-between items-center mb-6">
-          <h1 className="text-2xl font-semibold text-gray-900">User Management</h1>
+          <h1 className="text-2xl font-bold">User Management</h1>
           <Link
             href="/dashboard/users/new"
-            className="px-4 py-2 bg-primary-600 text-white rounded-md hover:bg-primary-700 flex items-center"
+            className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
           >
-            <svg
-              className="w-5 h-5 mr-2"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M12 6v6m0 0v6m0-6h6m-6 0H6"
-              />
-            </svg>
             Add User
           </Link>
         </div>
-
-        {/* Status Messages */}
-        {error && (
-          <div className="mb-4 p-4 bg-red-100 border border-red-400 text-red-700 rounded">
-            Error loading users: {error.message}
+        
+        <div className="bg-white shadow-md rounded-lg p-6">
+          <p className="text-gray-500 text-center py-8">
+            User management functionality will be implemented here.
+          </p>
+          
+          <div className="bg-yellow-50 border-l-4 border-yellow-400 p-4">
+            <div className="flex">
+              <div className="flex-shrink-0">
+                <svg className="h-5 w-5 text-yellow-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                  <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+                </svg>
+              </div>
+              <div className="ml-3">
+                <p className="text-sm text-yellow-700">
+                  This page displays the users in the system. We're now using the new app structure with proper nesting.
+                </p>
+              </div>
+            </div>
           </div>
-        )}
-
-        {deleteStatus.error && (
-          <div className="mb-4 p-4 bg-red-100 border border-red-400 text-red-700 rounded">
-            {deleteStatus.error}
-          </div>
-        )}
-
-        {deleteStatus.success && (
-          <div className="mb-4 p-4 bg-green-100 border border-green-400 text-green-700 rounded">
-            {deleteStatus.success}
-          </div>
-        )}
-
-        {/* Users Table */}
-        <div className="bg-white shadow rounded-lg">
-          <UsersTable
-            users={users}
-            loading={loading}
-            onDeleteUser={handleDeleteUser}
-          />
         </div>
       </div>
-    </div>
+    </AdminRoute>
   );
 }

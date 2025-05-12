@@ -1,24 +1,20 @@
 'use client';
 
 import React, { useEffect } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import LoginForm from '@/components/LoginForm';
-import GoogleSignInButton from '@/components/GoogleSignInButton';
 import { useAuth } from '@/contexts/AuthContext';
 
 export default function LoginPage() {
   const { isAuthenticated, isLoading } = useAuth();
   const router = useRouter();
-  const searchParams = useSearchParams();
-  const redirectPath = searchParams.get('redirect') || '/dashboard';
 
   useEffect(() => {
-    // If user is already authenticated, redirect to dashboard or the requested page
     if (isAuthenticated && !isLoading) {
-      router.push(redirectPath);
+      router.push('/dashboard');
     }
-  }, [isAuthenticated, isLoading, router, redirectPath]);
+  }, [isAuthenticated, isLoading, router]);
 
   if (isLoading) {
     return (
@@ -44,21 +40,6 @@ export default function LoginPage() {
         </div>
         
         <LoginForm />
-        
-        <div className="mt-6">
-          <div className="relative">
-            <div className="absolute inset-0 flex items-center">
-              <div className="w-full border-t border-gray-300" />
-            </div>
-            <div className="relative flex justify-center text-sm">
-              <span className="px-2 bg-white text-gray-500">Or continue with</span>
-            </div>
-          </div>
-
-          <div className="mt-6">
-            <GoogleSignInButton />
-          </div>
-        </div>
       </div>
     </div>
   );
