@@ -5,6 +5,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import Link from 'next/link';
 import ProtectedRoute from '@/components/ProtectedRoute';
 import DashboardLayout from '@/components/DashboardLayout';
+import RoleBadge from '@/components/RoleBadge';
 
 export default function Dashboard() {
   const { user } = useAuth();
@@ -40,9 +41,7 @@ export default function Dashboard() {
                 <div className="py-4 sm:py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
                   <dt className="text-sm font-medium text-gray-500">Role</dt>
                   <dd className="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
-                    <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">
-                      {user?.role?.name || 'No Role'}
-                    </span>
+                    <RoleBadge name={user?.role?.name || 'No Role'} />
                   </dd>
                 </div>
                 <div className="py-4 sm:py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">

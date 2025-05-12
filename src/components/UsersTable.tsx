@@ -3,6 +3,7 @@
 import React from 'react';
 import { User } from '@/lib';
 import { useRouter } from 'next/navigation';
+import RoleBadge from '@/components/RoleBadge';
 
 interface UsersTableProps {
   users: User[];
@@ -89,9 +90,7 @@ export default function UsersTable({ users, loading, onDeleteUser }: UsersTableP
                 <div className="text-sm text-gray-500">{user.email}</div>
               </td>
               <td className="px-6 py-4 whitespace-nowrap">
-                <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">
-                  {user.role?.name || 'No Role'}
-                </span>
+                <RoleBadge name={user.role?.name || 'No Role'} />
               </td>
               <td className="px-6 py-4 whitespace-nowrap">
                 {user.is_active ? (
