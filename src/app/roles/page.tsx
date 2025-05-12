@@ -1,8 +1,7 @@
+// src/app/roles/page.tsx
 'use client';
 
 import React, { useState } from 'react';
-import AdminRoute from '@/components/AdminRoute';
-import DashboardLayout from '@/components/DashboardLayout';
 import RolesTable from '@/components/RolesTable';
 import RoleForm from '@/components/RoleForm';
 import { useRoles } from '@/hooks/useRoles';
@@ -15,6 +14,11 @@ enum FormMode {
   EDIT
 }
 
+/**
+ * Roles management page
+ * Note: The AdminRoute protection is now handled by the layout.tsx file
+ * And DashboardLayout is handled by the parent dashboard/layout.tsx
+ */
 export default function RolesPage() {
   const { roles, loading, error, refetch } = useRoles();
   const [formMode, setFormMode] = useState<FormMode>(FormMode.NONE);
@@ -96,82 +100,78 @@ export default function RolesPage() {
   };
 
   return (
-    <AdminRoute>
-      <DashboardLayout>
-        <div className="py-6">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="flex justify-between items-center mb-6">
-              <h1 className="text-2xl font-semibold text-gray-900">Role Management</h1>
-              {formMode === FormMode.NONE && (
-                <button
-                  onClick={() => setFormMode(FormMode.CREATE)}
-                  className="px-4 py-2 bg-primary-600 text-white rounded-md hover:bg-primary-700 flex items-center"
-                >
-                  <svg
-                    className="w-5 h-5 mr-2"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M12 6v6m0 0v6m0-6h6m-6 0H6"
-                    />
-                  </svg>
-                  Add Role
-                </button>
-              )}
-            </div>
-
-            {/* Status Messages */}
-            {error && (
-              <div className="mb-4 p-4 bg-red-100 border border-red-400 text-red-700 rounded">
-                Error loading roles: {error.message}
-              </div>
-            )}
-
-            {statusMessage && (
-              <div
-                className={`mb-4 p-4 ${
-                  statusMessage.type === 'success'
-                    ? 'bg-green-100 border-green-400 text-green-700'
-                    : 'bg-red-100 border-red-400 text-red-700'
-                } rounded border`}
+    <div className="py-6">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex justify-between items-center mb-6">
+          <h1 className="text-2xl font-semibold text-gray-900">Role Management</h1>
+          {formMode === FormMode.NONE && (
+            <button
+              onClick={() => setFormMode(FormMode.CREATE)}
+              className="px-4 py-2 bg-primary-600 text-white rounded-md hover:bg-primary-700 flex items-center"
+            >
+              <svg
+                className="w-5 h-5 mr-2"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+                xmlns="http://www.w3.org/2000/svg"
               >
-                {statusMessage.message}
-              </div>
-            )}
-
-            {/* Role Form */}
-            {formMode !== FormMode.NONE && (
-              <div className="bg-white shadow rounded-lg p-6 mb-6">
-                <h2 className="text-lg font-medium text-gray-900 mb-4">
-                  {formMode === FormMode.CREATE ? 'Create New Role' : 'Edit Role'}
-                </h2>
-                <RoleForm
-                  role={currentRole || undefined}
-                  onSubmit={formMode === FormMode.CREATE ? handleCreateRole : handleUpdateRole}
-                  onCancel={cancelForm}
-                  isLoading={formLoading}
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M12 6v6m0 0v6m0-6h6m-6 0H6"
                 />
-              </div>
-            )}
-
-            {/* Roles Table */}
-            <div className="bg-white shadow rounded-lg">
-              <RolesTable
-                roles={roles}
-                loading={loading}
-                onEditRole={handleEditRole}
-                onDeleteRole={handleDeleteRole}
-              />
-            </div>
-          </div>
+              </svg>
+              Add Role
+            </button>
+          )}
         </div>
-      </DashboardLayout>
-    </AdminRoute>
+
+        {/* Status Messages */}
+        {error && (
+          <div className="mb-4 p-4 bg-red-100 border border-red-400 text-red-700 rounded">
+            Error loading roles: {error.message}
+          </div>
+        )}
+
+        {statusMessage && (
+          <div
+            className={`mb-4 p-4 ${
+              statusMessage.type === 'success'
+                ? 'bg-green-100 border-green-400 text-green-700'
+                : 'bg-red-100 border-red-400 text-red-700'
+            } rounded border`}
+          >
+            {statusMessage.message}
+          </div>
+        )}
+
+        {/* Role Form */}
+        {formMode !== FormMode.NONE && (
+          <div className="bg-white shadow rounded-lg p-6 mb-6">
+            <h2 className="text-lg font-medium text-gray-900 mb-4">
+              {formMode === FormMode.CREATE ? 'Create New Role' : 'Edit Role'}
+            </h2>
+            <RoleForm
+              role={currentRole || undefined}
+              onSubmit={formMode === FormMode.CREATE ? handleCreateRole : handleUpdateRole}
+              onCancel={cancelForm}
+              isLoading={formLoading}
+            />
+          </div>
+        )}
+
+        {/* Roles Table */}
+        <div className="bg-white shadow rounded-lg">
+          <RolesTable
+            roles={roles}
+            loading={loading}
+            onEditRole={handleEditRole}
+            onDeleteRole={handleDeleteRole}
+          />
+        </div>
+      </div>
+    </div>
   );
 }
