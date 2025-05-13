@@ -1,6 +1,6 @@
-// src/styles/globals.css
-// Add these rules at the end of your globals.css file
-// to apply consistent text coloring throughout the app
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
 @layer base {
   /* Base text color for the entire app */
