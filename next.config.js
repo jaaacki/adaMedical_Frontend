@@ -8,21 +8,18 @@ const nextConfig = {
   experimental: {
     // For better CSS optimization
     optimizeCss: true,
-    // Removed serverActions as it's now available by default
   },
-  // API configuration - using environment variables for the backend URL
+  // API configuration - fix the path mapping to match the backend structure
   async rewrites() {
-    // Get API URL from environment variables or use a default
-    const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5555/api/v1';
-    
-    console.log(`Proxying API requests to: ${apiUrl}`);
-    
     return [
       {
+        // Frontend requests to /api/users/me
         source: '/api/:path*',
-        // Use the API URL from environment or default to port 5555 (Flask app in docker-compose)
-        destination: `${apiUrl}/:path*`,
+        // Backend expects /api/v1/users/me - insert the v1 part
+        destination: 'http://localhost:5555/api/v1/:path*',
       },
     ];
   },
 }
+
+module.exports = nextConfig
