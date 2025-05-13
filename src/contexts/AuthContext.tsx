@@ -74,7 +74,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         
         try {
           // Fetch current user data
-          const response = await apiClient.get('/users/me');
+          const response = await axios.get('/api/users/me', {
+            headers: {
+              'Authorization': `Bearer ${token}`
+            }
+          });
           
           const userData = response.data;
           debugLog("User data fetched from API:", userData);
@@ -121,8 +125,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     try {
       debugLog(`Attempting login for email: ${email}`);
       
-      // Make login request
-      const response = await axios.post(`${API_URL}/users/login`, { email, password });
+      // Use direct axios call instead of apiClient to avoid import issues
+      const response = await axios.post('/api/users/login', { email, password });
       debugLog("Login API response:", response.data);
       
       // Extract tokens
@@ -147,8 +151,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       }
       debugLog("Tokens stored in localStorage");
       
-      // Fetch user data
-      const userResponse = await apiClient.get('/users/me');
+      // Fetch user data using direct axios call
+      const userResponse = await axios.get('/api/users/me', {
+        headers: {
+          'Authorization': `Bearer ${accessToken}`
+        }
+      });
       const userData = userResponse.data;
       debugLog("User data after login:", userData);
       

@@ -12,6 +12,8 @@ services:
       - /app/.next # Preserve .next folder in container
     environment:
       - NODE_ENV=development
-      - NEXT_PUBLIC_API_URL=http://localhost:5555/api/v1
+      # For Docker, we need to use the API service name and port
+      # Make sure this matches exactly what the backend is exposing
+      - NEXT_PUBLIC_API_URL=http://app:5555/api/v1
     working_dir: /app
     command: npm run dev

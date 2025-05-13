@@ -10,16 +10,19 @@ const nextConfig = {
     optimizeCss: true,
     // Removed serverActions as it's now available by default
   },
-  // API configuration - adjust to your backend URL
+  // API configuration - using environment variables for the backend URL
   async rewrites() {
+    // Get API URL from environment variables or use a default
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5555/api/v1';
+    
+    console.log(`Proxying API requests to: ${apiUrl}`);
+    
     return [
       {
         source: '/api/:path*',
-        // Use port 5000 instead of 5555, which is the Flask app's default port in docker-compose
-        destination: `http://localhost:5000/api/v1/:path*`,
+        // Use the API URL from environment or default to port 5555 (Flask app in docker-compose)
+        destination: `${apiUrl}/:path*`,
       },
     ];
   },
 }
-
-module.exports = nextConfig

@@ -1,9 +1,13 @@
 import axios from 'axios';
 
-// Create an Axios instance with direct backend config for debugging
+// Get the base URL for the API - use env var if available, otherwise fallback to localhost
+const API_URL = typeof window !== 'undefined' ? 
+  (process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5555/api/v1') : 
+  'http://localhost:5555/api/v1';
+
+// Create an Axios instance for debugging direct backend access
 const debugApiClient = axios.create({
-  // Try connecting directly to the backend to diagnose the issue
-  baseURL: 'http://localhost:5000/api/v1',
+  baseURL: API_URL,
   headers: {
     'Content-Type': 'application/json',
   },
@@ -40,7 +44,7 @@ debugApiClient.interceptors.response.use(
 
 // Create an Axios instance with relative URLs for standard app use
 const apiClient = axios.create({
-  // Use relative URLs that will be proxied by Next.js rewrites
+  // For the browser client, use relative URLs that will be proxied by Next.js
   baseURL: '/api',
   headers: {
     'Content-Type': 'application/json',
