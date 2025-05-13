@@ -2,11 +2,10 @@
 
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import axios from 'axios';
 import apiClient from '@/lib/api-client';
 
-// API URL
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5555/api/v1';
+// API URL - removed as we'll use the apiClient configuration
+// const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5555/api/v1';
 
 // User type
 interface User {
@@ -73,12 +72,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         debugLog("Access token found, checking authentication");
         
         try {
-          // Fetch current user data
-          const response = await axios.get('/api/users/me', {
-            headers: {
-              'Authorization': `Bearer ${token}`
-            }
-          });
+          // Use apiClient instead of direct axios call
+          const response = await apiClient.get('/users/me');
           
           const userData = response.data;
           debugLog("User data fetched from API:", userData);
@@ -125,8 +120,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     try {
       debugLog(`Attempting login for email: ${email}`);
       
-      // Use direct axios call instead of apiClient to avoid import issues
-      const response = await axios.post('/api/users/login', { email, password });
+      // Use apiClient instead of direct axios call
+      const response = await apiClient.post('/users/login', { email, password });
       debugLog("Login API response:", response.data);
       
       // Extract tokens
@@ -151,12 +146,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       }
       debugLog("Tokens stored in localStorage");
       
-      // Fetch user data using direct axios call
-      const userResponse = await axios.get('/api/users/me', {
-        headers: {
-          'Authorization': `Bearer ${accessToken}`
-        }
-      });
+      // Fetch user data using apiClient
+      const userResponse = await apiClient.get('/users/me');
       const userData = userResponse.data;
       debugLog("User data after login:", userData);
       
@@ -194,8 +185,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       localStorage.setItem('redirect_after_login', currentPath);
     }
     
+    // Get the API URL from apiClient for Google auth
+    const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5555/api/v1';
+    
     // Redirect to Google auth endpoint
-    window.location.href = `${API_URL}/auth/google/login`;
+    window.location.href = `${apiBaseUrl}/auth/google/login`;
   };
 
   // Logout function
