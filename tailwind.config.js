@@ -1,3 +1,4 @@
+// tailwind.config.js
 /** @type {import('tailwindcss').Config} */
 module.exports = {
   content: [
@@ -34,11 +35,83 @@ module.exports = {
           900: '#4c1d95',
           950: '#2e1065',
         },
+        // Override default gray colors with higher contrast versions
+        gray: {
+          50: '#f9fafb',
+          100: '#f3f4f6',
+          200: '#e5e7eb',
+          300: '#d1d5db',
+          400: '#9ca3af',
+          500: '#6b7280',
+          600: '#4b5563',
+          700: '#374151',
+          800: '#1f2937',
+          900: '#111827',
+          950: '#030712',
+        },
       },
       fontFamily: {
         sans: ['Inter', 'sans-serif'],
       },
+      // Add custom typography settings
+      typography: (theme) => ({
+        DEFAULT: {
+          css: {
+            color: theme('colors.gray.800'),
+            h1: {
+              color: theme('colors.gray.900'),
+            },
+            h2: {
+              color: theme('colors.gray.900'),
+            },
+            h3: {
+              color: theme('colors.gray.900'),
+            },
+            a: {
+              color: theme('colors.primary.600'),
+              '&:hover': {
+                color: theme('colors.primary.700'),
+              },
+            },
+          },
+        },
+      }),
     },
   },
-  plugins: [],
-}
+  plugins: [
+    // Add the typography plugin if not already included
+    require('@tailwindcss/typography'),
+    
+    // Add a custom plugin for consistent text colors
+    function ({ addUtilities, theme }) {
+      const newUtilities = {
+        '.text-default': {
+          color: theme('colors.gray.800'),
+        },
+        '.text-muted': {
+          color: theme('colors.gray.600'),
+        },
+        '.text-heading': {
+          color: theme('colors.gray.900'),
+        },
+        '.text-subdued': {
+          color: theme('colors.gray.500'),
+        },
+      };
+      addUtilities(newUtilities);
+    },
+  ],
+  // Global styles that will apply consistently to elements
+  corePlugins: {
+    // Enable container by default
+    container: true,
+  },
+  // Custom variant for form inputs 
+  variants: {
+    extend: {
+      opacity: ['disabled'],
+      backgroundColor: ['disabled'],
+      textColor: ['disabled'],
+    },
+  },
+};

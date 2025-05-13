@@ -1,8 +1,10 @@
-'use client';
-
+// src/components/RolesTable.tsx (Updated with new components)
 import React from 'react';
 import { Role } from '@/lib';
 import RoleBadge from './RoleBadge';
+import { TableHeader } from './TableHeader';
+import { Badge } from './Badge';
+import { Button } from './Button';
 
 interface RolesTableProps {
   roles: Role[];
@@ -14,20 +16,17 @@ interface RolesTableProps {
 export default function RolesTable({ roles, loading, onEditRole, onDeleteRole }: RolesTableProps) {
   // Helper function to determine if a role is protected
   const isProtectedRole = (roleName: string): boolean => {
-    // List of protected roles that cannot be deleted
     const protectedRoles = ['admin', 'user'];
     return protectedRoles.includes(roleName.toLowerCase());
   };
 
   // Handle role deletion with confirmation
   const handleDeleteClick = (role: Role) => {
-    // Check if the role is protected
     if (isProtectedRole(role.name)) {
       alert(`Cannot delete the "${role.name}" role as it is a protected system role.`);
       return;
     }
     
-    // Ask for confirmation
     if (window.confirm(`Are you sure you want to delete the role "${role.name}"?`)) {
       onDeleteRole(role.id);
     }
@@ -49,8 +48,8 @@ export default function RolesTable({ roles, loading, onEditRole, onDeleteRole }:
   if (roles.length === 0) {
     return (
       <div className="text-center py-12 bg-gray-50 rounded-lg">
-        <p className="text-gray-500 text-lg">No roles found.</p>
-        <p className="text-gray-400 text-sm mt-2">Create a new role to get started.</p>
+        <p className="text-gray-700 text-lg">No roles found.</p>
+        <p className="text-secondary text-sm mt-2">Create a new role to get started.</p>
       </div>
     );
   }
@@ -61,30 +60,10 @@ export default function RolesTable({ roles, loading, onEditRole, onDeleteRole }:
       <table className="min-w-full divide-y divide-gray-200">
         <thead className="bg-gray-50">
           <tr>
-            <th
-              scope="col"
-              className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-            >
-              ID
-            </th>
-            <th
-              scope="col"
-              className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-            >
-              Role Name
-            </th>
-            <th
-              scope="col"
-              className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-            >
-              Status
-            </th>
-            <th
-              scope="col"
-              className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider"
-            >
-              Actions
-            </th>
+            <TableHeader>ID</TableHeader>
+            <TableHeader>Role Name</TableHeader>
+            <TableHeader>Status</TableHeader>
+            <TableHeader className="text-right">Actions</TableHeader>
           </tr>
         </thead>
         <tbody className="bg-white divide-y divide-gray-200">
@@ -94,30 +73,24 @@ export default function RolesTable({ roles, loading, onEditRole, onDeleteRole }:
             return (
               <tr key={role.id} className={`hover:bg-gray-50 ${isProtected ? 'bg-gray-50' : ''}`}>
                 <td className="px-6 py-4 whitespace-nowrap">
-                  <div className="text-sm text-gray-900">{role.id}</div>
+                  <div className="text-sm text-heading">{role.id}</div>
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap">
-                  <div className="text-sm font-medium text-gray-900">
+                  <div className="text-sm font-medium">
                     <RoleBadge name={role.name} />
                   </div>
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap">
                   {isProtected ? (
-                    <span className="px-2 inline-flex text-xs leading-5 font-medium rounded-full bg-blue-100 text-blue-800">
-                      System Role
-                    </span>
+                    <Badge variant="info">System Role</Badge>
                   ) : (
-                    <span className="px-2 inline-flex text-xs leading-5 font-medium rounded-full bg-green-100 text-green-800">
-                      Custom Role
-                    </span>
+                    <Badge variant="success">Custom Role</Badge>
                   )}
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                   <button
                     onClick={() => onEditRole(role)}
-                    className={`text-primary-600 hover:text-primary-900 mr-4 focus:outline-none focus:underline ${
-                      isProtected ? 'cursor-default' : ''
-                    }`}
+                    className="text-primary-600 hover:text-primary-900 mr-4 focus:outline-none focus:underline"
                     title={isProtected ? "System roles can be edited but name changes may be restricted" : "Edit role"}
                   >
                     Edit

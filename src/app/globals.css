@@ -1,37 +1,162 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+// src/styles/globals.css
+// Add these rules at the end of your globals.css file
+// to apply consistent text coloring throughout the app
 
-:root {
-  --foreground-rgb: 0, 0, 0;
-  --background-start-rgb: 240, 240, 240;
-  --background-end-rgb: 255, 255, 255;
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --foreground-rgb: 255, 255, 255;
-    --background-start-rgb: 0, 0, 0;
-    --background-end-rgb: 0, 0, 0;
+@layer base {
+  /* Base text color for the entire app */
+  html {
+    @apply text-gray-800;
+  }
+  
+  /* Heading styles */
+  h1, h2, h3, h4, h5, h6 {
+    @apply text-gray-900;
+    @apply font-medium;
+  }
+  
+  /* Form element styles */
+  input, select, textarea {
+    @apply text-gray-800 !important;
+    @apply border-gray-300;
+    @apply focus:border-primary-500;
+    @apply focus:ring-primary-500;
+  }
+  
+  /* Table elements */
+  th {
+    @apply text-gray-700;
+    @apply font-medium;
+  }
+  
+  td {
+    @apply text-gray-800;
+  }
+  
+  /* Labels for form elements */
+  label {
+    @apply text-gray-700;
+    @apply font-medium;
+    @apply text-sm;
+  }
+  
+  /* Placeholder text */
+  ::placeholder {
+    @apply text-gray-400;
+  }
+  
+  /* Make sure buttons have readable text */
+  button, 
+  [type='button'], 
+  [type='reset'], 
+  [type='submit'] {
+    @apply text-sm;
+    @apply font-medium;
+  }
+  
+  /* Secondary and muted text */
+  .text-secondary {
+    @apply text-gray-600;
+  }
+  
+  .text-muted {
+    @apply text-gray-500;
+  }
+  
+  /* Description text and form hints */
+  .form-hint {
+    @apply text-gray-600;
+    @apply text-sm;
+    @apply mt-1;
   }
 }
 
-body {
-  color: rgb(var(--foreground-rgb));
-  background: linear-gradient(
-      to bottom,
-      transparent,
-      rgb(var(--background-end-rgb))
-    )
-    rgb(var(--background-start-rgb));
-}
-
-input {
-  color: rgb(17, 24, 39) !important; /* text-gray-900 */
-}
-
-@layer utilities {
-  .text-balance {
-    text-wrap: balance;
+/* Component-specific overrides */
+@layer components {
+  /* Table header overrides */
+  .table-header {
+    @apply bg-gray-50;
+    @apply text-left;
+    @apply text-xs;
+    @apply font-medium;
+    @apply text-gray-700;
+    @apply uppercase;
+    @apply tracking-wider;
+    @apply px-6;
+    @apply py-3;
+  }
+  
+  /* Badge styles with appropriate colors */
+  .badge {
+    @apply px-2;
+    @apply inline-flex;
+    @apply text-xs;
+    @apply leading-5;
+    @apply font-medium;
+    @apply rounded-full;
+  }
+  
+  .badge-success {
+    @apply bg-green-100;
+    @apply text-green-800;
+  }
+  
+  .badge-warning {
+    @apply bg-yellow-100;
+    @apply text-yellow-800;
+  }
+  
+  .badge-danger {
+    @apply bg-red-100;
+    @apply text-red-800;
+  }
+  
+  .badge-info {
+    @apply bg-blue-100;
+    @apply text-blue-800;
+  }
+  
+  .badge-default {
+    @apply bg-gray-100;
+    @apply text-gray-800;
+  }
+  
+  /* Button styles with better contrast */
+  .btn {
+    @apply px-4;
+    @apply py-2;
+    @apply rounded-md;
+    @apply font-medium;
+    @apply focus:outline-none;
+    @apply focus:ring-2;
+    @apply focus:ring-offset-2;
+  }
+  
+  .btn-primary {
+    @apply bg-primary-600;
+    @apply text-white;
+    @apply hover:bg-primary-700;
+    @apply focus:ring-primary-500;
+  }
+  
+  .btn-secondary {
+    @apply bg-white;
+    @apply text-gray-700;
+    @apply border;
+    @apply border-gray-300;
+    @apply hover:bg-gray-50;
+    @apply focus:ring-primary-500;
+  }
+  
+  .btn-danger {
+    @apply bg-red-600;
+    @apply text-white;
+    @apply hover:bg-red-700;
+    @apply focus:ring-red-500;
+  }
+  
+  /* Form container styling */
+  .form-group {
+    @apply space-y-1;
+    @apply mb-4;
   }
 }
