@@ -38,6 +38,9 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
                   <NavLink href="/dashboard/roles">
                     Roles
                   </NavLink>
+                  <NavLink href="/dashboard/currencies">
+                    Currencies
+                  </NavLink>
                 </div>
               </div>
               

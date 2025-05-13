@@ -8,14 +8,6 @@ export interface Currency {
   is_active: boolean;
 }
 
-export interface UserCurrency {
-  id: number;
-  user_id: number;
-  currency_code: string;
-  is_default: boolean;
-  currency: Currency;
-}
-
 /**
  * Get currencies assigned to the current user
  */
@@ -126,6 +118,66 @@ export const updateUserCurrencies = async (userId: number, currencies: string[],
     return response.data;
   } catch (error) {
     console.error(`Error updating currencies for user ${userId}:`, error);
+    throw error;
+  }
+};
+
+export interface UserCurrency {
+  id: number;
+  user_id: number;
+  currency_code: string;
+  is_default: boolean;
+  currency: Currency;
+}
+
+
+/**
+ * Get a specific currency by code
+ */
+export const getCurrencyByCode = async (code: string): Promise<Currency> => {
+  try {
+    const response = await apiClient.get(`/currencies/${code}`);
+    return response.data;
+  } catch (error) {
+    console.error(`Error fetching currency with code ${code}:`, error);
+    throw error;
+  }
+};
+
+/**
+ * Create a new currency
+ */
+export const createCurrency = async (currencyData: Currency): Promise<Currency> => {
+  try {
+    const response = await apiClient.post('/currencies', currencyData);
+    return response.data;
+  } catch (error) {
+    console.error('Error creating currency:', error);
+    throw error;
+  }
+};
+
+/**
+ * Update a currency
+ */
+export const updateCurrency = async (code: string, currencyData: Partial<Currency>): Promise<Currency> => {
+  try {
+    const response = await apiClient.put(`/currencies/${code}`, currencyData);
+    return response.data;
+  } catch (error) {
+    console.error(`Error updating currency with code ${code}:`, error);
+    throw error;
+  }
+};
+
+/**
+ * Delete a currency
+ */
+export const deleteCurrency = async (code: string): Promise<void> => {
+  try {
+    await apiClient.delete(`/currencies/${code}`);
+  } catch (error) {
+    console.error(`Error deleting currency with code ${code}:`, error);
     throw error;
   }
 };
