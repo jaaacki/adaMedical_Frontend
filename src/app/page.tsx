@@ -1,31 +1,202 @@
-import Link from 'next/link'
+'use client';
 
-export default function Home() {
+import React from 'react';
+import { useAuth } from '@/contexts/AuthContext';
+import Link from 'next/link';
+
+export default function Dashboard() {
+  const { user } = useAuth();
+  const isAdmin = user?.role?.name === 'Admin';
+
   return (
-    <main className="flex min-h-screen flex-col items-center justify-center p-24">
-      <div className="relative bg-white rounded-xl shadow-xl p-8 max-w-lg w-full">
-        <h1 className="text-3xl font-bold text-center mb-6">
-          Integrated Business Operations Platform
-        </h1>
-        <p className="text-gray-600 text-center mb-8">
-          Welcome to the frontend for your business operations system
+    <div className="container mx-auto px-4 py-8">
+      {/* Welcome Card */}
+      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 mb-8">
+        <h1 className="text-2xl font-bold text-gray-800 dark:text-gray-200 mb-4">Welcome to Business Operations Platform</h1>
+        <p className="text-gray-600 dark:text-gray-400 mb-4">
+          Your integrated solution for managing business operations, users, and system configurations.
         </p>
-        
+      </div>
+
+      {/* Profile Card */}
+      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 mb-8">
+        <h2 className="text-xl font-bold text-gray-800 dark:text-gray-200 mb-4">Your Profile</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <Link 
-            href="/auth/login" 
-            className="px-4 py-2 bg-primary-600 hover:bg-primary-700 text-white rounded-md text-center transition-colors"
-          >
-            Login
-          </Link>
-          <Link 
-            href="/dashboard" 
-            className="px-4 py-2 bg-secondary-600 hover:bg-secondary-700 text-white rounded-md text-center transition-colors"
-          >
-            Dashboard
-          </Link>
+          <div>
+            <p className="text-sm text-gray-500 dark:text-gray-500">Name</p>
+            <p className="font-medium text-gray-800 dark:text-gray-200">{user?.name || 'Loading...'}</p>
+          </div>
+          <div>
+            <p className="text-sm text-gray-500 dark:text-gray-500">Email</p>
+            <p className="font-medium text-gray-800 dark:text-gray-200">{user?.email || 'Loading...'}</p>
+          </div>
+          <div>
+            <p className="text-sm text-gray-500 dark:text-gray-500">Role</p>
+            <div className="inline-block px-2 py-1 text-xs font-semibold rounded-full bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-300">
+              {user?.role?.name || 'No Role'}
+            </div>
+          </div>
+          <div>
+            <p className="text-sm text-gray-500 dark:text-gray-500">Account Status</p>
+            {user?.is_active ? (
+              <div className="inline-block px-2 py-1 text-xs font-semibold rounded-full bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-300">
+                Active
+              </div>
+            ) : (
+              <div className="inline-block px-2 py-1 text-xs font-semibold rounded-full bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-300">
+                Inactive
+              </div>
+            )}
+          </div>
         </div>
       </div>
-    </main>
-  )
+
+      {/* Admin Tools Section */}
+      {isAdmin && (
+        <div className="mb-8">
+          <h2 className="text-xl font-bold text-gray-800 dark:text-gray-200 mb-4">Admin Tools</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {/* User Management Card */}
+            <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md overflow-hidden">
+              <div className="p-6">
+                <div className="flex items-center mb-4">
+                  <div className="bg-blue-100 dark:bg-blue-900 p-3 rounded-full mr-4">
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-blue-600 dark:text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+                    </svg>
+                  </div>
+                  <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-200">User Management</h3>
+                </div>
+                <p className="text-gray-600 dark:text-gray-400 mb-4">
+                  Create, edit, and manage users in the system. Assign roles and set permissions.
+                </p>
+                <Link 
+                  href="/dashboard/users" 
+                  className="inline-block bg-blue-600 hover:bg-blue-700 dark:bg-blue-700 dark:hover:bg-blue-800 text-white font-medium py-2 px-4 rounded transition-colors"
+                >
+                  Manage Users
+                </Link>
+              </div>
+            </div>
+
+            {/* Role Management Card */}
+            <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md overflow-hidden">
+              <div className="p-6">
+                <div className="flex items-center mb-4">
+                  <div className="bg-purple-100 dark:bg-purple-900 p-3 rounded-full mr-4">
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-purple-600 dark:text-purple-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                    </svg>
+                  </div>
+                  <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-200">Role Management</h3>
+                </div>
+                <p className="text-gray-600 dark:text-gray-400 mb-4">
+                  Define and configure roles with specific permissions for various system functions.
+                </p>
+                <Link 
+                  href="/dashboard/roles" 
+                  className="inline-block bg-purple-600 hover:bg-purple-700 dark:bg-purple-700 dark:hover:bg-purple-800 text-white font-medium py-2 px-4 rounded transition-colors"
+                >
+                  Manage Roles
+                </Link>
+              </div>
+            </div>
+
+            {/* Currency Management Card */}
+            <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md overflow-hidden">
+              <div className="p-6">
+                <div className="flex items-center mb-4">
+                  <div className="bg-green-100 dark:bg-green-900 p-3 rounded-full mr-4">
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-green-600 dark:text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                  </div>
+                  <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-200">Currency Management</h3>
+                </div>
+                <p className="text-gray-600 dark:text-gray-400 mb-4">
+                  Manage available currencies and their properties in the system.
+                </p>
+                <Link 
+                  href="/dashboard/currencies" 
+                  className="inline-block bg-green-600 hover:bg-green-700 dark:bg-green-700 dark:hover:bg-green-800 text-white font-medium py-2 px-4 rounded transition-colors"
+                >
+                  Manage Currencies
+                </Link>
+              </div>
+            </div>
+
+            {/* System Settings Card */}
+            <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md overflow-hidden">
+              <div className="p-6">
+                <div className="flex items-center mb-4">
+                  <div className="bg-gray-100 dark:bg-gray-700 p-3 rounded-full mr-4">
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-gray-600 dark:text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                    </svg>
+                  </div>
+                  <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-200">System Settings</h3>
+                </div>
+                <p className="text-gray-600 dark:text-gray-400 mb-4">
+                  Configure global system settings, preferences, and behavior.
+                </p>
+                <button 
+                  className="inline-block bg-gray-600 hover:bg-gray-700 dark:bg-gray-700 dark:hover:bg-gray-600 text-white font-medium py-2 px-4 rounded cursor-not-allowed opacity-50 transition-colors"
+                  disabled
+                >
+                  Coming Soon
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Quick Actions */}
+      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
+        <h2 className="text-xl font-bold text-gray-800 dark:text-gray-200 mb-4">Quick Actions</h2>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <Link
+            href="/dashboard/profile"
+            className="flex flex-col items-center p-4 bg-gray-50 dark:bg-gray-700 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-blue-500 mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+            </svg>
+            <span className="text-sm text-center text-gray-700 dark:text-gray-300">Edit Profile</span>
+          </Link>
+          
+          <button
+            className="flex flex-col items-center p-4 bg-gray-50 dark:bg-gray-700 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors"
+            onClick={() => alert('Documentation coming soon!')}
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-blue-500 mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+            </svg>
+            <span className="text-sm text-center text-gray-700 dark:text-gray-300">Documentation</span>
+          </button>
+          
+          <button
+            className="flex flex-col items-center p-4 bg-gray-50 dark:bg-gray-700 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors"
+            onClick={() => alert('Support system coming soon!')}
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-blue-500 mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18.364 5.636l-3.536 3.536m0 5.656l3.536 3.536M9.172 9.172L5.636 5.636m3.536 9.192l-3.536 3.536M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-5 0a4 4 0 11-8 0 4 4 0 018 0z" />
+            </svg>
+            <span className="text-sm text-center text-gray-700 dark:text-gray-300">Get Support</span>
+          </button>
+          
+          <button
+            className="flex flex-col items-center p-4 bg-gray-50 dark:bg-gray-700 rounded-lg hover:bg-red-50 dark:hover:bg-red-900/30 transition-colors"
+            onClick={() => confirm('Do you want to logout?') && document.getElementById('logout-button')?.click()}
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-red-500 mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+            </svg>
+            <span className="text-sm text-center text-gray-700 dark:text-gray-300">Logout</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  );
 }

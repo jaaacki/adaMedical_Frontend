@@ -19,9 +19,9 @@ export default function CurrenciesTable({
   if (loading) {
     return (
       <div className="animate-pulse space-y-3 py-4 px-6">
-        <div className="h-8 bg-gray-200 rounded"></div>
+        <div className="h-8 bg-gray-200 dark:bg-gray-700 rounded"></div>
         {[...Array(3)].map((_, index) => (
-          <div key={index} className="h-12 bg-gray-200 rounded"></div>
+          <div key={index} className="h-12 bg-gray-200 dark:bg-gray-700 rounded"></div>
         ))}
       </div>
     );
@@ -29,9 +29,9 @@ export default function CurrenciesTable({
 
   if (currencies.length === 0) {
     return (
-      <div className="text-center py-12 bg-gray-50 rounded-lg">
-        <p className="text-gray-500 text-lg">No currencies found.</p>
-        <p className="text-gray-400 text-sm mt-2">Add a new currency to get started.</p>
+      <div className="text-center py-12 bg-gray-50 dark:bg-gray-800 rounded-lg">
+        <p className="text-gray-500 dark:text-gray-400 text-lg">No currencies found.</p>
+        <p className="text-gray-400 dark:text-gray-500 text-sm mt-2">Add a new currency to get started.</p>
       </div>
     );
   }
@@ -54,63 +54,63 @@ export default function CurrenciesTable({
 
   return (
     <div className="overflow-x-auto">
-      <table className="min-w-full divide-y divide-gray-200">
-        <thead className="bg-gray-50">
+      <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+        <thead className="bg-gray-50 dark:bg-gray-800">
           <tr>
             <th
               scope="col"
-              className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+              className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider"
             >
               Code
             </th>
             <th
               scope="col"
-              className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+              className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider"
             >
               Name
             </th>
             <th
               scope="col"
-              className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+              className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider"
             >
               Symbol
             </th>
             <th
               scope="col"
-              className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+              className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider"
             >
               Status
             </th>
             <th
               scope="col"
-              className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider"
+              className="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider"
             >
               Actions
             </th>
           </tr>
         </thead>
-        <tbody className="bg-white divide-y divide-gray-200">
+        <tbody className="bg-white dark:bg-gray-900 divide-y divide-gray-200 dark:divide-gray-800">
           {currencies.map((currency) => {
             const isProtected = ['SGD', 'IDR'].includes(currency.code);
             
             return (
-              <tr key={currency.code} className={`hover:bg-gray-50 ${isProtected ? 'bg-gray-50' : ''}`}>
+              <tr key={currency.code} className={`hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors ${isProtected ? 'bg-gray-50 dark:bg-gray-800/50' : ''}`}>
                 <td className="px-6 py-4 whitespace-nowrap">
-                  <div className="text-sm font-medium text-gray-900">{currency.code}</div>
+                  <div className="text-sm font-medium text-gray-900 dark:text-gray-100">{currency.code}</div>
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap">
-                  <div className="text-sm font-medium text-gray-900">{currency.name}</div>
+                  <div className="text-sm font-medium text-gray-900 dark:text-gray-100">{currency.name}</div>
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap">
-                  <div className="text-sm text-gray-500">{currency.symbol}</div>
+                  <div className="text-sm text-gray-500 dark:text-gray-400">{currency.symbol}</div>
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap">
                   {currency.is_active ? (
-                    <span className="px-2 inline-flex text-xs leading-5 font-medium rounded-full bg-green-100 text-green-800">
+                    <span className="px-2 inline-flex text-xs leading-5 font-medium rounded-full bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-300">
                       Active
                     </span>
                   ) : (
-                    <span className="px-2 inline-flex text-xs leading-5 font-medium rounded-full bg-gray-100 text-gray-800">
+                    <span className="px-2 inline-flex text-xs leading-5 font-medium rounded-full bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-300">
                       Inactive
                     </span>
                   )}
@@ -118,7 +118,7 @@ export default function CurrenciesTable({
                 <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                   <button
                     onClick={() => onEditCurrency && onEditCurrency(currency)}
-                    className={`text-primary-600 hover:text-primary-900 mr-4 focus:outline-none focus:underline ${
+                    className={`text-primary-600 dark:text-primary-400 hover:text-primary-900 dark:hover:text-primary-300 mr-4 focus:outline-none focus:underline transition-colors ${
                       isProtected ? 'cursor-default' : ''
                     }`}
                     title={isProtected ? "System currencies can be edited but code changes may be restricted" : "Edit currency"}
@@ -127,7 +127,7 @@ export default function CurrenciesTable({
                   </button>
                   <button
                     onClick={() => handleDeleteClick(currency)}
-                    className={`text-red-600 hover:text-red-900 focus:outline-none focus:underline ${
+                    className={`text-red-600 dark:text-red-400 hover:text-red-900 dark:hover:text-red-300 focus:outline-none focus:underline transition-colors ${
                       isProtected ? 'opacity-50 cursor-not-allowed' : ''
                     }`}
                     disabled={isProtected}

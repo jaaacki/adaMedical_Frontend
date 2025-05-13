@@ -5,158 +5,252 @@
 @layer base {
   /* Base text color for the entire app */
   html {
-    @apply text-gray-800;
+    @apply text-gray-800 dark:text-gray-200;
+  }
+  
+  body {
+    @apply bg-white dark:bg-gray-900;
   }
   
   /* Heading styles */
   h1, h2, h3, h4, h5, h6 {
-    @apply text-gray-900;
+    @apply text-gray-900 dark:text-gray-100;
     @apply font-medium;
+  }
+  
+  h1 {
+    @apply text-2xl sm:text-3xl font-bold;
+  }
+  
+  h2 {
+    @apply text-xl sm:text-2xl font-semibold;
+  }
+  
+  h3 {
+    @apply text-lg font-semibold;
   }
   
   /* Form element styles */
   input, select, textarea {
-    @apply text-gray-800 !important;
-    @apply border-gray-300;
-    @apply focus:border-primary-500;
-    @apply focus:ring-primary-500;
+    @apply text-gray-800 dark:text-gray-200;
+    @apply bg-white dark:bg-gray-800;
+    @apply border-gray-300 dark:border-gray-700;
+    @apply rounded-md;
+    @apply shadow-sm;
+    @apply focus:border-primary-500 dark:focus:border-primary-400;
+    @apply focus:ring-primary-500 dark:focus:ring-primary-400;
   }
   
-  /* Table elements */
-  th {
-    @apply text-gray-700;
-    @apply font-medium;
-  }
-  
-  td {
-    @apply text-gray-800;
+  /* Checkbox and radio styles */
+  [type="checkbox"], [type="radio"] {
+    @apply text-primary-600 dark:text-primary-500;
+    @apply focus:ring-primary-500 dark:focus:ring-primary-400;
+    @apply border-gray-300 dark:border-gray-700;
   }
   
   /* Labels for form elements */
   label {
-    @apply text-gray-700;
+    @apply text-gray-700 dark:text-gray-300;
     @apply font-medium;
     @apply text-sm;
   }
   
   /* Placeholder text */
   ::placeholder {
-    @apply text-gray-400;
-  }
-  
-  /* Make sure buttons have readable text */
-  button, 
-  [type='button'], 
-  [type='reset'], 
-  [type='submit'] {
-    @apply text-sm;
-    @apply font-medium;
-  }
-  
-  /* Secondary and muted text */
-  .text-secondary {
-    @apply text-gray-600;
-  }
-  
-  .text-muted {
-    @apply text-gray-500;
-  }
-  
-  /* Description text and form hints */
-  .form-hint {
-    @apply text-gray-600;
-    @apply text-sm;
-    @apply mt-1;
+    @apply text-gray-400 dark:text-gray-600;
   }
 }
 
-/* Component-specific overrides */
 @layer components {
-  /* Table header overrides */
+  /* Table styling */
+  .table-container {
+    @apply overflow-x-auto;
+    @apply rounded-lg;
+    @apply shadow;
+  }
+  
+  .table {
+    @apply min-w-full;
+    @apply divide-y divide-gray-200 dark:divide-gray-700;
+  }
+  
   .table-header {
-    @apply bg-gray-50;
+    @apply bg-gray-50 dark:bg-gray-800;
     @apply text-left;
     @apply text-xs;
     @apply font-medium;
-    @apply text-gray-700;
+    @apply text-gray-500 dark:text-gray-400;
     @apply uppercase;
     @apply tracking-wider;
     @apply px-6;
     @apply py-3;
   }
   
-  /* Badge styles with appropriate colors */
-  .badge {
-    @apply px-2;
-    @apply inline-flex;
-    @apply text-xs;
-    @apply leading-5;
-    @apply font-medium;
-    @apply rounded-full;
+  .table-cell {
+    @apply px-6 py-4;
+    @apply whitespace-nowrap;
+    @apply text-sm;
+    @apply text-gray-800 dark:text-gray-200;
   }
   
-  .badge-success {
-    @apply bg-green-100;
-    @apply text-green-800;
+  /* Card component */
+  .card {
+    @apply bg-white dark:bg-gray-800;
+    @apply shadow-md;
+    @apply rounded-lg;
+    @apply overflow-hidden;
   }
   
-  .badge-warning {
-    @apply bg-yellow-100;
-    @apply text-yellow-800;
+  .card-header {
+    @apply px-6 py-4;
+    @apply bg-gray-50 dark:bg-gray-700;
+    @apply border-b border-gray-200 dark:border-gray-700;
   }
   
-  .badge-danger {
-    @apply bg-red-100;
-    @apply text-red-800;
+  .card-body {
+    @apply p-6;
   }
   
-  .badge-info {
-    @apply bg-blue-100;
-    @apply text-blue-800;
+  .card-footer {
+    @apply px-6 py-4;
+    @apply bg-gray-50 dark:bg-gray-700;
+    @apply border-t border-gray-200 dark:border-gray-700;
   }
   
-  .badge-default {
-    @apply bg-gray-100;
-    @apply text-gray-800;
-  }
-  
-  /* Button styles with better contrast */
+  /* Button styles */
   .btn {
-    @apply px-4;
-    @apply py-2;
+    @apply inline-flex items-center justify-center;
+    @apply px-4 py-2;
+    @apply border;
     @apply rounded-md;
-    @apply font-medium;
-    @apply focus:outline-none;
-    @apply focus:ring-2;
-    @apply focus:ring-offset-2;
+    @apply text-sm font-medium;
+    @apply focus:outline-none focus:ring-2 focus:ring-offset-2;
   }
   
   .btn-primary {
-    @apply bg-primary-600;
+    @apply border-transparent;
     @apply text-white;
-    @apply hover:bg-primary-700;
+    @apply bg-primary-600 hover:bg-primary-700 dark:bg-primary-700 dark:hover:bg-primary-800;
     @apply focus:ring-primary-500;
   }
   
   .btn-secondary {
-    @apply bg-white;
-    @apply text-gray-700;
-    @apply border;
-    @apply border-gray-300;
-    @apply hover:bg-gray-50;
+    @apply border-gray-300 dark:border-gray-600;
+    @apply text-gray-700 dark:text-gray-300;
+    @apply bg-white hover:bg-gray-50 dark:bg-gray-800 dark:hover:bg-gray-700;
     @apply focus:ring-primary-500;
   }
   
   .btn-danger {
-    @apply bg-red-600;
+    @apply border-transparent;
     @apply text-white;
-    @apply hover:bg-red-700;
+    @apply bg-red-600 hover:bg-red-700;
     @apply focus:ring-red-500;
   }
   
-  /* Form container styling */
+  .btn-success {
+    @apply border-transparent;
+    @apply text-white;
+    @apply bg-green-600 hover:bg-green-700;
+    @apply focus:ring-green-500;
+  }
+  
+  /* Badge styles */
+  .badge {
+    @apply inline-flex;
+    @apply items-center;
+    @apply px-2.5 py-0.5;
+    @apply text-xs font-medium;
+    @apply rounded-full;
+  }
+  
+  .badge-success {
+    @apply bg-green-100 dark:bg-green-900;
+    @apply text-green-800 dark:text-green-300;
+  }
+  
+  .badge-warning {
+    @apply bg-yellow-100 dark:bg-yellow-900;
+    @apply text-yellow-800 dark:text-yellow-300;
+  }
+  
+  .badge-danger {
+    @apply bg-red-100 dark:bg-red-900;
+    @apply text-red-800 dark:text-red-300;
+  }
+  
+  .badge-info {
+    @apply bg-blue-100 dark:bg-blue-900;
+    @apply text-blue-800 dark:text-blue-300;
+  }
+  
+  .badge-default {
+    @apply bg-gray-100 dark:bg-gray-700;
+    @apply text-gray-800 dark:text-gray-300;
+  }
+  
+  /* Form group */
   .form-group {
-    @apply space-y-1;
     @apply mb-4;
+  }
+  
+  .form-input {
+    @apply mt-1;
+    @apply block w-full;
+    @apply rounded-md;
+    @apply border-gray-300 dark:border-gray-700;
+    @apply shadow-sm;
+    @apply focus:border-primary-500 focus:ring-primary-500 dark:focus:border-primary-400 dark:focus:ring-primary-400;
+  }
+  
+  .form-label {
+    @apply block;
+    @apply text-sm font-medium;
+    @apply text-gray-700 dark:text-gray-300;
+    @apply mb-1;
+  }
+  
+  .form-hint {
+    @apply mt-1;
+    @apply text-sm;
+    @apply text-gray-500 dark:text-gray-400;
+  }
+  
+  .form-error {
+    @apply mt-1;
+    @apply text-sm;
+    @apply text-red-600 dark:text-red-400;
+  }
+}
+
+/* Utility classes for common patterns */
+@layer utilities {
+  .text-default {
+    @apply text-gray-800 dark:text-gray-200;
+  }
+  
+  .text-muted {
+    @apply text-gray-600 dark:text-gray-400;
+  }
+  
+  .text-heading {
+    @apply text-gray-900 dark:text-gray-100;
+  }
+  
+  .text-subdued {
+    @apply text-gray-500 dark:text-gray-500;
+  }
+  
+  /* Transitions */
+  .transition-fast {
+    @apply transition duration-150 ease-in-out;
+  }
+  
+  .transition-normal {
+    @apply transition duration-200 ease-in-out;
+  }
+  
+  .transition-slow {
+    @apply transition duration-300 ease-in-out;
   }
 }

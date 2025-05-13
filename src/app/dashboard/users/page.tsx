@@ -22,10 +22,10 @@ export default function UsersPage() {
   return (
     <div className="max-w-7xl mx-auto px-4 py-6">
       <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-bold text-gray-900">User Management</h1>
+        <h1 className="text-2xl font-bold text-gray-900 dark:text-white">User Management</h1>
         <Link
           href="/dashboard/users/new"
-          className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+          className="bg-blue-600 dark:bg-blue-700 text-white px-4 py-2 rounded hover:bg-blue-700 dark:hover:bg-blue-800 transition-colors"
         >
           Add User
         </Link>
@@ -33,12 +33,12 @@ export default function UsersPage() {
       
       {/* Error display */}
       {(error || deleteError) && (
-        <div className="mb-4 p-4 bg-red-100 border border-red-400 text-red-700 rounded">
+        <div className="mb-4 p-4 bg-red-100 dark:bg-red-900/30 border border-red-400 dark:border-red-800 text-red-700 dark:text-red-400 rounded">
           {error?.message || deleteError}
         </div>
       )}
       
-      <div className="bg-white shadow-md rounded-lg overflow-hidden">
+      <div className="bg-white dark:bg-gray-800 shadow-md rounded-lg overflow-hidden">
         <UsersTable 
           users={users} 
           loading={loading} 
